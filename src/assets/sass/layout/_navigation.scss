@@ -1,0 +1,40 @@
+#navbarBurger{
+    border-color: rgba(0,0,0,0.0)
+}
+
+.navtitle{
+    font-family: $lemonmilk;
+    font-size: 2rem;
+    color: green;
+}
+
+
+.button.is-active{
+    border-color: rgba(0,0,0,0.0);
+    border: 0px;
+}
+.navbar-burgerr{
+    border: 0px 0 px;
+}
+#navbarBurger:focus,
+#navbarBurger:active{
+    border-color: $nocolor;
+    border: none;
+}
+#navbarBurger:hover{
+    background-color: rgba(0,0,0,0.0)
+}
+#navbarBurger {
+    margin-top: 5px;
+}
+#navbarMenu{
+    width: 50%;
+    float: right;
+    position: absolute;
+    right: 0px;
+    height: 90vh;
+    z-index: 999;
+}
+.router-link-exact-active{
+    color: red;
+}

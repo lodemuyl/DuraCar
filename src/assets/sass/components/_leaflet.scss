@@ -1,0 +1,13 @@
+.leaflet-default-icon-path {
+    background-image: url(../images/marker-icon.png);
+}
+
+.leaflet-pane.leaflet-shadow-pane img{
+    display: none;
+}
+#tankstationsmaps,
+#locationmaps{
+    width: 100vw;
+    height: 88vh;
+    display: block;
+}

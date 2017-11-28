@@ -1,0 +1,45 @@
+.huurcard{
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    color: #484848;
+}
+.huurtitle{
+    font-family: $raleway;
+    font-size: $carfontsize;
+    color: white;
+}
+.huurcontent{
+    font-family: $raleway;
+    position: absolute;
+    bottom: 0px;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+    color: white;
+}
+.prijs{
+    font-size: 1.5rem;
+    color: white;
+}
+.auto{
+    margin-top: 3px;
+}
+.merklogo{
+    -webkit-filter: sepia(100%);
+    filter: sepia(100%);
+}
+.merklogowrapper{
+    width: 70%;
+    overflow: auto;
+    display: block;
+    text-align: center;
+    margin: 0 auto;
+}
+.merkachtervoegsel{
+    font-size: 0.7rem;
+}
+.overlay{
+    background-color: #34495e;
+    opacity: 0.95;
+}

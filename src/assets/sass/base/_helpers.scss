@@ -1,0 +1,61 @@
+.noradiusbutton{
+    border-radius: 0px;
+}
+.shadow{
+    box-shadow: 0px 0px 5px #484848;
+}
+.green{
+    color: $green;
+}
+.red{
+    color: $red;
+}
+.pagetitle{
+    font-family: $lemonmilk;
+    font-size: $pagetitlefontsize;
+    text-align: center;
+    margin: 10px 0px;
+    padding: 10px 0px;
+}
+.bold{
+    font-weight: 600!important;
+}
+.customcolumn{
+    padding: 0.4rem!important;
+}
+.alineatitle{
+    font-size: 1rem!important;
+}
+.subtitle{
+    font-size: 1.2rem!important;
+}
+.popuptitle{
+    font-family: $lemonmilk;
+    font-size: $popuptitlefontsize;
+}
+.lemonmilk{
+    font-family: $lemonmilk;
+}
+.nopadding{
+    padding: 0px!important;
+}
+.noshadow{
+    box-shadow: 0 0px 0px rgba(10, 10, 10, 0.0), 0 0 0 0px rgba(10, 10, 10, 0.0);}
+.relative{
+    position: relative;
+}
+.absolute{
+    position: absolute;
+}
+.center{
+    text-align: center;
+}
+.fullwidth{
+    width: 100%
+}
+.right{
+    text-align: right;
+}
+.nodecoration{
+    text-decoration: none !important;
+}
