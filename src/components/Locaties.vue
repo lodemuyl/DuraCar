@@ -8,19 +8,22 @@
         </div>
       </div>
     </div>
-    <div id="locationmaps">
-      <v-map :zoom=13 :center="[lat, lon]">
-        <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
-        <div>
-          <v-marker :lat-lng="[lat, lon]">
-            <v-popup>
-              <h1 class="popuptitle">blabla</h1>
-              <p>blabla</p>
-            </v-popup>
-          </v-marker>
-        </div>        
-      </v-map>
-    </div>
+      <div id="locationmaps">
+        <v-map :zoom=13 :center="[lat, lon]">
+          <v-tilelayer url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"></v-tilelayer>
+          <div v-for="locatie in autolijst">
+            <v-marker :lat-lng="[locatie.la, locatie.lo]">
+              <v-popup>
+                <h1 class="popuptitle">{{ locatie.merkid }} {{ locatie.type }}</h1>
+                <p>{{ locatie.straat }} {{ locatie.nummer }}</p>
+                <p>{{ locatie.gemeente }}</p>
+                <p>€{{ locatie.prijs }}/dag</p>
+                <router-link :to="locatie.url">Bekijk</router-link>
+              </v-popup>
+            </v-marker>             
+          </div> 
+        </v-map>
+      </div>
     </div>
 </template>
 
@@ -35,12 +38,12 @@ export default {
       lat: 51.052496,
       lon: 3.723932,
       autolijst: [],
-      autolocaties: [],
       errors: []
     }
   },
   created () {  
-    this.autos();
+    this.autos(); 
+    this.$forceUpdate()  
   },
   methods: {
     autos: function () {
@@ -49,27 +52,27 @@ export default {
         axios.get(`http://localhost/duracar/autolijst`)
       ])
       .then(axios.spread((merklijst, autolijst) => {
+        var lijsttemp = [];
         for (var i = 0; i < autolijst.data.length; i++) {
-          this.autolijst[i] = {
+          lijsttemp[i] = {
             merkid: merklijst.data[autolijst.data[i].field_merk[0].target_id -1].name[0].value,
             type : autolijst.data[i].name[0].value,
             nummer : autolijst.data[i].field_huisnummer[0].value,
             straat : autolijst.data[i].field_straat[0].value,
             gemeente : autolijst.data[i].field_gemeente[0].value,
             prijs : autolijst.data[i].field_prijs[0].value,
-            link: null,
+            url: {
+              name: "Detail",
+              params: { 
+                id: autolijst.data[i].id[0].value, 
+                }
+            },
             postcode: 0,
-            la: 3,
-            lo: 2
-          };        
-        }       
-      }))
-      .then(axios.spread((merklijst, autolijstt) => {
-        for (var j = 0; j < this.autolijst.length; j++){
-            var gemeente = this.autolijst[j].gemeente.replace(/\s+/g, '');
-            var straat = this.autolijst[j].straat.replace(/\s+/g, '');
-            this.locaties(this.autolijst[j].nummer, straat, gemeente, j);
-        };       
+            la: autolijst.data[i].field_geolocatie[0].lat,
+            lo: autolijst.data[i].field_geolocatie[0].lng
+          };                 
+        }   
+       this.autolijst = lijsttemp;
       }))
       .catch((e) => {
         console.log(e)
@@ -81,7 +84,7 @@ export default {
       axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
         params: {
           address: nummer + '+' + straat +'+' + gemeente,
-          KEY: 'AIzaSyARdlIgefrEsCFs7dIGRC5cTCS3rSIZXOs'
+          KEY: 'AIzaSyCCv6YJdCeG7tz3kVDWQJHsGcIU1LJB1kg'
         }
       })
       .then((locaties) => {
