@@ -8,11 +8,12 @@ import 'font-awesome/css/font-awesome.css'
 import 'bulma/bulma.sass'
 import 'leaflet/dist/leaflet.css'
 import Vue2Leaflet from 'vue2-leaflet'
-import VeeValidate from 'vee-validate';
+import VeeValidate from 'vee-validate'
 import '@/assets/js/bulma.js'
 import '@/assets/js/main.js'
 import '@/assets/sass/main.scss'
-
+import vSelect from 'vue-select'
+import Datepicker from 'vuejs-datepicker'
 
 Vue.config.productionTip = false
 //leafletcomponents voor maps
@@ -21,6 +22,10 @@ Vue.component('v-tilelayer', Vue2Leaflet.TileLayer);
 Vue.component('v-marker', Vue2Leaflet.Marker);
 Vue.component('v-popup', Vue2Leaflet.Popup);
 Vue.component('v-icondefault', Vue2Leaflet.IconDefault)
+//multiselect plugin component
+Vue.component('v-select', vSelect)
+//vuedatepicker
+Vue.component('datepicker', Datepicker);
 
 /* eslint-disable no-new */
 new Vue({

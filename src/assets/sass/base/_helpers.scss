@@ -17,6 +17,12 @@
     margin: 10px 0px;
     padding: 10px 0px;
 }
+.addpicture{
+    margin-left: 0px;
+}
+.left{
+    text-align: left;
+}
 .bold{
     font-weight: 600!important;
 }
@@ -58,4 +64,17 @@
 }
 .nodecoration{
     text-decoration: none !important;
+}
+.inlineblock{
+    display: inline-block;
+}
+.floatright{
+    float: right;
+}
+.nomargin{
+    margin: 0px!important;
+}
+.regulartextfontsize{
+    font-size: 0.75rem;
+    margin-bottom: 1.2rem;
 }

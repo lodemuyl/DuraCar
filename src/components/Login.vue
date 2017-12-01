@@ -1,6 +1,11 @@
 <template>
   <div class="login">
     <h1 class="pagetitle">{{ title }}</h1>
+    <form @submit.prevent="logout">
+      <div class="control">
+        <button id='logout' class="button is-link fullwidth">Logout</button>
+      </div>
+    </form>
     <form @submit.prevent="login" v-if="!formSubmitted">
       <div class="columns is-mobile">
         <div class="column is-10 is-offset-1">    
@@ -40,7 +45,7 @@
           </div>
         </div>      
       </div>
-    </form>    
+    </form>   
     <div v-else class="columns is-mobile" >
       <div class="column is-10 is-offset-1">
         <div class="notification is-primary">
@@ -105,6 +110,9 @@ export default {
               this.errors.push(e.response.statusText)
             }
           });
+    },
+    logout () {
+      console.log('logout')
     }
   }
 }

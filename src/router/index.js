@@ -12,6 +12,7 @@ import Mijnautos from '@/components/Mijnautos'
 import Gehuurdeautos from '@/components/Gehuurdeautos'
 import Detail from '@/components/Detail'
 import NotFound from '@/components/NotFound'
+import Disclaimer from '@/components/Disclaimer'
 
 Vue.use(Router)
 
@@ -71,6 +72,11 @@ export default new Router({
       path: '/Huren/:id',
       name: 'Detail',
       component: Detail
+    },
+    {
+      path: '/Disclaimer',
+      name: 'Disclaimer',
+      component: Disclaimer
     },
     {
       path: '/*',

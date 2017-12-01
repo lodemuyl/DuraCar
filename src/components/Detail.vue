@@ -9,7 +9,7 @@
       </div>
     </div>
     <div v-if="errors.length == 0" class="card noshadow">
-        <div class="card-content nopadding noshadow">
+        <div v-if="afbeeldingen.picture1 || afbeeldingen.picture2 || afbeeldingen.picture3" class="card-content nopadding noshadow">
           <div class="content noshadow">
             <img v-if="afbeeldingen.picture1" :src="afbeeldingen.picture1">
             <img v-if="afbeeldingen.picture2" :src="afbeeldingen.picture2">
@@ -46,12 +46,11 @@
                   <p>{{ locatie.straat }} {{ locatie.nummer }} <br> {{ locatie.gemeente }}</p>
                 </div>
               </div>  
-              <div class="columns is-mobile">
+              <div v-if="voorwaarden.length > 0" class="columns is-mobile">
                 <div class="column customcolumn">
                   <h2 class="alineatitle bold">Voorwaarden</h2>
-                  <ul>
-                    <li>punt1</li>
-                    <li>punt2</li>
+                  <ul v-for="voorwaarde in voorwaarden">
+                    <li>{{ voorwaarde }}</li>
                   </ul>
                 </div>
               </div>
@@ -68,31 +67,33 @@
               <div class="columns is-mobile">
                 <div class="column customcolumn">
                   <h2 class="alineatitle bold">Aandrijving</h2>
-                  <p>benzine</p>
+                  <p>{{ aandrijving }}</p>
                 </div>
                 <div class="column customcolumn">
                   <h2 class="alineatitle bold">Nummerplaat</h2>
                   <p>{{ nummerplaat }}</p>
                 </div>
               </div>  
-              <div class="columns is-mobile">
+              <div v-if="specs.length > 0" class="columns is-mobile">
                 <div class="column customcolumn">
                   <h2 class="alineatitle bold">Specificaties</h2>
-                  <ul>
-                    <li>1</li>
-                    <li>2</li>
+                  <ul v-for="spec in specs">
+                    <li> {{ spec }} </li>
                   </ul>
                 </div>
-              </div>       
-                              
+              </div>                                 
                     <div class="columns is-multiline is-mobile datepicker">
                       <div class=" column is-half customcolumn">
-                        <h2 class="alineatitle bold">Beschikbaar van</h2>
-                        <input type="date" name="van"  max="2018-11-28"><br><br>
+                        <h2 class="alineatitle bold center">Beschikbaar van</h2>
+                        <div  class="center">
+                          <input type="date" name="van"  max="2018-11-28">
+                        </div>
                       </div>
                       <div class=" column is-half customcolumn">
-                        <h2 class="alineatitle bold">Beschikbaar tot</h2>
-                        <input type="date" name="tot" max="2018-11-28"><br><br>
+                        <h2 class="alineatitle bold center">Beschikbaar tot</h2>
+                        <div class="center">
+                          <input  type="date" name="tot" max="2018-11-28">
+                        </div>
                       </div>
                     </div> 
                     <div >
@@ -101,8 +102,7 @@
                       <div class=" column customcolumn">                     
                         <button class="button fullwidth">Huur mij nu!</button>
                       </div>
-                    </div>  
-              
+                    </div>                
             </div>
           </div>
         </div>
@@ -122,6 +122,10 @@ export default {
       deuren: null,
       zitplaatsen: null,
       nummerplaat: null,
+      aandrijving: null,
+      voorwaarden: [],
+      specs: [],
+      merk: null,
       locatie: {
         straat: null,
         nummer: 0,
@@ -132,8 +136,14 @@ export default {
         picture2: null,
         picture3: null
       },
-      auto: [],
-      errors: []
+      errors: [],
+      data: {
+        merken: [],
+        aandrijvingen: [],
+        voorwaarden: [],
+        specs: [],
+      },
+      geschrevendoor: null
     }
   },
   created () {
@@ -142,21 +152,85 @@ export default {
   methods: {
     autosget: function() {
       var url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json'
-      axios.get(url)
-      .then((autos) => {
+      axios.all([
+        axios.get(url),
+        axios.get(`http://localhost/duracar/voorwaarden`),
+        axios.get(`http://localhost/duracar/specificaties`),
+        axios.get(`http://localhost/duracar/merkenlijst`),
+        axios.get(`http://localhost/duracar/aandrijvingenlijst`)
+      ])
+      .then(axios.spread((autos, voorwaarden, specs, merken, aandrijvingen) => {
+         //voorwaarden ophalen
+        var voorwaardentemp = [];
+        for (var i = 0; i < voorwaarden.data.length; i++) {
+          voorwaardentemp[voorwaarden.data[i].id[0].value] = {
+             naam : voorwaarden.data[i].name[0].value
+          }       
+        };
+        this.data.voorwaarden = voorwaardentemp;
+        //specs ophalen
+        var specstemp = [];
+        for (var j = 0; j < specs.data.length; j++) {
+          specstemp[specs.data[j].id[0].value] = {
+            naam : specs.data[j].name[0].value,
+          }
+        };
+        this.data.specs = specstemp;
+        //merken ophalen
+        var merkentemp = [];
+        for (var k = 0; k < merken.data.length; k++) {
+          merkentemp[merken.data[k].id[0].value] = {
+            naam : merken.data[k].name[0].value,
+          }
+        };
+        this.data.merken = merkentemp;
+        //aandrijvingen ophalen
+        var aandrijvingentemp = [];
+        for (var m = 0; m < aandrijvingen.data.length; m++) {
+          aandrijvingentemp[aandrijvingen.data[m].id[0].value] = {
+            naam : aandrijvingen.data[m].name[0].value,
+          }
+        };
+        this.data.aandrijvingen = aandrijvingentemp;
+        //data rechtstreeks uit de carlist view halen en toewijzen 
         (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto1"]) ? this.afbeeldingen.picture1 = this.afbeeldingen.picture1 = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto1"][0].href : this.afbeeldingen.picture1 = null;
         (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto2"]) ? this.afbeeldingen.picture2 = this.afbeeldingen.picture2 = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto2"][0].href : this.afbeeldingen.picture2 = null;
         (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto3"]) ? this.afbeeldingen.picture3 = this.afbeeldingen.picture3 = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_foto3"][0].href : this.afbeeldingen.picture3 = null;
         this.locatie.straat = autos.data.field_straat[0].value;
-        this.locatie.nummer = autos.data.field_huisnummer[0].value
-        this.locatie.gemeente = autos.data.field_gemeente[0].value
-        this.deuren = autos.data.field_aantal_deuren[0].value
-        this.zitplaatsen = autos.data.field_zitplaatsen[0].value
-        this.nummerplaat = autos.data.field_nummerplaat[0].value
-        this.title = autos.data.name[0].value
-        this.prijs = autos.data.field_prijs[0].value
-        this.auto = autos.data
-      })
+        this.locatie.nummer = autos.data.field_huisnummer[0].value;
+        this.locatie.gemeente = autos.data.field_gemeente[0].value;
+        this.deuren = autos.data.field_aantal_deuren[0].value;
+        this.zitplaatsen = autos.data.field_zitplaatsen[0].value;
+        this.nummerplaat = autos.data.field_nummerplaat[0].value;
+        this.title = autos.data.name[0].value;
+        this.prijs = autos.data.field_prijs[0].value;     
+        //aan de hand van id de voorwaarden ophalen    
+          if (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_voorwaarden"]) {
+            let voorwaardentemp = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_voorwaarden"];
+            for(var b = 0; b < voorwaardentemp.length; b++){
+              if (voorwaardentemp[b].href.match(/voorwaarden\/(\d+)/)[1]) {
+                this.voorwaarden.push(this.data.voorwaarden[voorwaardentemp[b].href.match(/voorwaarden\/(\d+)/)[1]].naam)                
+              }
+            }
+          }
+        //aan de hand van de id de specs ophalen
+          if (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_specificaties"]) {
+            let specificatiestemp = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_specificaties"];
+            for(var b = 0; b < specificatiestemp.length; b++){
+              if (specificatiestemp[b].href.match(/specificaties\/(\d+)/)[1]) {
+                this.specs.push(this.data.specs[specificatiestemp[b].href.match(/specificaties\/(\d+)/)[1]].naam)                
+              }
+            }
+          }
+        //aandrijving
+          if (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"]) {
+            let aandrijvingtemp = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"]; 
+              if (aandrijvingtemp[0].href.match(/aandrijvingen\/(\d+)/)[1]) {
+                this.aandrijving = this.data.aandrijvingen[aandrijvingtemp[0].href.match(/aandrijvingen\/(\d+)/)[1]].naam           
+              }            
+          }    
+
+      }))
       .catch(error => {    
         this.errors.push(error.message)
         

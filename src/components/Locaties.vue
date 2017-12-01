@@ -24,6 +24,8 @@
           </div> 
         </v-map>
       </div>
+      <v-marker :icon="mylocationicon"  :lat-lng="[mylat, mylon]"></v-marker>  
+
     </div>
 </template>
 
@@ -35,8 +37,14 @@ export default {
   data () {
     return {
       title: 'Locaties',
+      mylocationicon: L.icon({
+        iconUrl: require('@/assets/images/mijnlocatie.png'),
+        iconAnchor: [20, 40]
+      }),
       lat: 51.052496,
       lon: 3.723932,
+      mylat: null,
+      mylon: null,
       autolijst: [],
       errors: []
     }
@@ -44,6 +52,11 @@ export default {
   created () {  
     this.autos(); 
     this.$forceUpdate()  
+  },
+  mounted () {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(this.showPosition) 
+      }
   },
   methods: {
     autos: function () {
@@ -78,6 +91,10 @@ export default {
         console.log(e)
         this.errors.push(e.message)
       })
+    },
+    showPosition : function(position){   
+        this.mylat = position.coords.latitude
+        this.mylon = position.coords.longitude      
     },
     locaties: function (nummer, straat, gemeente, j) {
       console.log()

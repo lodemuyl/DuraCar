@@ -1,0 +1,24 @@
+.footer {
+    padding: 1.5rem;
+    background-color: $darkgrey;
+    color: $transpablack;
+    a{
+        color: $white!important;
+        i{
+            color: $white;
+        }
+    }
+}
+.cirkel{
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    border: 2px solid $white;
+    color: $white;
+    text-align: center;
+    margin-left: 15px;
+}
+.socialmediapadding{
+    padding-top: 4px;
+}

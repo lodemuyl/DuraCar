@@ -49,10 +49,17 @@
             </p>
           </div>
           <div class="field">
-            <label class="label">Gsm-nummer</label>
-            <div class="control">
-              <input v-model="gsm" v-validate.initial="gsm" data-vv-rules="required|digits:10" :class="{'is-danger': errors.has('gsm') }" class="input" type="text" placeholder="Gsm-nummer" name="gsm">
-            </div>
+            <label class="label">Gsm-nummer</label>  
+            <div class="field has-addons">
+              <p class="control">
+                <a class="button is-static">
+                +32
+                </a>
+              </p>
+              <p class="control is-expanded">
+                <input v-model="gsm" v-validate.initial="gsm" data-vv-rules="required|digits:9" :class="{'is-danger': errors.has('gsm') }" class="input" type="text" placeholder="Gsm-nummer" name="gsm">
+              </p>
+            </div>             
             <p class="help is-danger" v-if="errors.has('gsm')">{{ errors.first('gsm') }}</p>
           </div>
 
@@ -112,7 +119,6 @@ export default {
       wachtwoord: null,
       wachtwoordherhaal: null,
       formSubmitted: false,
-      error: null,
       errorregister: []
     }
   },
@@ -129,7 +135,7 @@ export default {
       "name": [{ "value": this.naam }],
       "mail": [{ "value": this.email }],
       "pass": [{ "value": this.wachtwoord }],
-      "field_gsm_nummer" : [{ "value": this.gsm}]
+      "field_gsm_nummer" : [{ "value": "0" + this.gsm}]
       },
       {
         'Content-Type': 'application/hal+json',

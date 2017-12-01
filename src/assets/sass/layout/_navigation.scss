@@ -1,40 +1,68 @@
 #navbarBurger{
     border-color: rgba(0,0,0,0.0)
 }
-
+header{
+    width: 100vw;
+}
 .navtitle{
     font-family: $lemonmilk;
     font-size: 2rem;
-    color: green;
+    color: rgba(0,0,0,0.6)
 }
-
+.navbar{
+    background-color: $darkgrey;
+}
 
 .button.is-active{
     border-color: rgba(0,0,0,0.0);
     border: 0px;
 }
-.navbar-burgerr{
-    border: 0px 0 px;
-}
+
 #navbarBurger:focus,
 #navbarBurger:active{
     border-color: $nocolor;
     border: none;
 }
 #navbarBurger:hover{
-    background-color: rgba(0,0,0,0.0)
+    background-color: $transpablack;
 }
 #navbarBurger {
     margin-top: 5px;
-}
+    background-color: $darkgrey;  
+    span {
+        color: $white;
+    }  
+    &:hover{
+        background-color: $darkgrey;
+    }
+}   
+@media screen and (max-width: 1023px) {
+    #navbarMenu{
+        width: 250px;
+        float: right;
+        position: absolute;
+        right: 0px;
+        height: 90vh;
+        z-index: 999;
+        background-color: $darkgrey;
+        a {
+            color:  $white;
+            &:hover{
+                background-color: $darkgrey;
+                color: $transpablack;
+            }
+        };
+        
+    }
+  }
 #navbarMenu{
-    width: 50%;
-    float: right;
-    position: absolute;
-    right: 0px;
-    height: 90vh;
-    z-index: 999;
+    a{
+        color: white;        
+    }
 }
 .router-link-exact-active{
-    color: red;
+    color: $red!important;
+}
+.navbar-dropdown .navbar-item{
+    padding-left: 2.5rem!important;
 }

@@ -65,13 +65,6 @@ export default {
       }
   },
   methods: {
-    custom: function () {
-      return L.icon({
-        iconUrl: "http://simpleicon.com/wp-content/uploads/map-marker-5.png",
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-      })
-    },
     showPosition : function(position){   
         this.mylat = position.coords.latitude
         this.mylon = position.coords.longitude      

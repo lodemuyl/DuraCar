@@ -3,8 +3,8 @@
     <header>
       <nav class="navbar shadow " role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
-          <a class="navbar-item" href="https://bulma.io">
-            <h1 class="navtitle">Duracar</h1>
+          <a class="navbar-item" href="/">
+            <h1 class="navtitle">DuraCar</h1>
           </a>
           <div id="navbarBurger" class="button navbar-burger noradiusbutton" data-target="navbarMenu">
             <span></span>
@@ -38,6 +38,24 @@
       <router-view>        
       </router-view>
     </main>
+    <footer class="footer">
+      <div class="container">
+        <div class="content">
+          <p class="inlineblock">
+            <router-link class="bold" to="/Disclaimer">Disclaimer</router-link>         
+          </p>
+          <p class="inlineblock floatright">
+            <a class="socialmedia"><div class="cirkel socialmediapadding"><i class="fa fa-facebook" aria-hidden="true"></i></div></a>           
+          </p>
+          <p class="inlineblock floatright">
+            <a  class="socialmedia"><div class="cirkel socialmediapadding"><i class="fa fa-instagram" aria-hidden="true"></i></div></a>            
+          </p>
+          <p class="inlineblock floatright">
+            <a class="socialmedia"><div class="cirkel socialmediapadding"><i class="fa fa-pinterest-p" aria-hidden="true"></i></div></a>
+          </p>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 <script>
