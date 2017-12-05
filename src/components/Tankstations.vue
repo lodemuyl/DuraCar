@@ -45,7 +45,8 @@ export default {
       title: 'tankstations',
       mylocationicon: L.icon({
         iconUrl: require('@/assets/images/mijnlocatie.png'),
-        iconAnchor: [20, 40]
+        iconSize:     [30, 60],
+        iconAnchor: [0, 0]
         }),
       lat: 51.052496,
       lon: 3.723932,

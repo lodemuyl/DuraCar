@@ -4,11 +4,23 @@
 .shadow{
     box-shadow: 0px 0px 5px #484848;
 }
+.notextdecoration{
+    text-decoration: none;
+}
 .green{
     color: $green;
 }
 .red{
-    color: $red;
+    color: $red!important;
+}
+.transpablack{
+    background-color: $transpablack;
+}
+.blackgrey{
+    background-color: $blackgrey
+}
+.grey{
+    background-color: $darkgrey;
 }
 .pagetitle{
     font-family: $lemonmilk;
@@ -27,7 +39,7 @@
     font-weight: 600!important;
 }
 .customcolumn{
-    padding: 0.4rem!important;
+    padding: 0rem!important;
 }
 .alineatitle{
     font-size: 1rem!important;
@@ -36,7 +48,7 @@
     font-size: 1.2rem!important;
 }
 .popuptitle{
-    font-family: $lemonmilk;
+    font-family: $lemonmilk!important;
     font-size: $popuptitlefontsize;
 }
 .lemonmilk{
@@ -59,6 +71,9 @@
 .fullwidth{
     width: 100%
 }
+.fullheight{
+    height: 100%;
+}
 .right{
     text-align: right;
 }
@@ -68,6 +83,12 @@
 .inlineblock{
     display: inline-block;
 }
+.block{
+    display: block;
+}
+.white{
+    color: $white!important;
+}
 .floatright{
     float: right;
 }
@@ -76,5 +97,9 @@
 }
 .regulartextfontsize{
     font-size: 0.75rem;
+    margin-top: 0.5rem;
     margin-bottom: 1.2rem;
+}
+.inlineblock{
+    display: inline-block;
 }
