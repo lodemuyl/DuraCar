@@ -44,7 +44,8 @@
     <div v-else class="columns is-mobile" >
       <div class="column is-10 is-offset-1">
         <div class="notification is-primary">
-          <p>Je bent succesvol Ingelogd!.</p>
+          <p>Dag {{ naam }}, je bent succesvol Ingelogd!.</p>
+          <router-link to="/Account">Ga naar mijn profiel</router-link>
         </div> 
       </div>     
     </div>
@@ -76,8 +77,7 @@ export default {
       formSubmitted: false
     } 
   },
-  created () {
-    //this.getuser();    
+  created () {    
   },
   methods: {
     login () {  
@@ -103,7 +103,10 @@ export default {
               Vue.ls.set('logout-token', fresponse.data.logout_toke, 60 * 60 * 3000);
               Vue.ls.set('naam', fresponse.data.current_user.name, 60 * 60 * 3000);
               Vue.ls.set('auth', 'Basic' + btoa(this.naam + ':' + this.wachtwoord), 60 * 60 * 3000)
+              this.getuser();    
               this.formSubmitted = true
+              next('/Account');
+
           })
           .catch( e => {
             if(e.response.data.message == "Sorry, unrecognized username or password."){
@@ -145,8 +148,16 @@ export default {
     getuser () {
        let id = Vue.ls.get('uuid');
        let auth = Vue.ls.get('auth')
-       var url = 'http://localhost/duracar/user/'+id+'?Authorization='+ auth 
-       axios.get(url)
+       var url = 'http://localhost/duracar/user/'+1+'?_format=hal_json'
+       axios.get(url,{
+         auth: {
+           username: this.naam,
+           password: this.wachtwoord
+         },
+         'headers': {
+           'Authorization': auth
+         }
+       })
        .then((data) => {
          console.log(data)
        })

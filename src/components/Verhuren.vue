@@ -398,8 +398,11 @@ export default {
       })
       .then((locaties) => {
         if(locaties.data.results.length !== 0){
-          this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
-          this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
+          //this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
+          //this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
+          console.log(locaties.data.results[0].geometry.location.lat);
+          console.log(locaties.data.results[0].geometry.location.lng);
+
         }        
       })
       .catch((e) => {
