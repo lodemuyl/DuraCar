@@ -50,8 +50,7 @@ export default {
     }
   },
   created () {  
-    this.autos(); 
-    this.$forceUpdate()  
+    this.autos();
   },
   mounted () {
     if (navigator.geolocation) {
@@ -81,8 +80,8 @@ export default {
                 }
             },
             postcode: 0,
-            la: autolijst.data[i].field_geolocatie[0].lat,
-            lo: autolijst.data[i].field_geolocatie[0].lng
+            la: (autolijst.data[i].field_geolocatie.length > 0) ? autolijst.data[i].field_geolocatie[0].lat : autolijst.data[i].field_lat2[0].value,
+            lo: (autolijst.data[i].field_geolocatie.length > 0) ? autolijst.data[i].field_geolocatie[0].lng : autolijst.data[i].field_lon2[0].value,
           };                 
         }   
        this.autolijst = lijsttemp;

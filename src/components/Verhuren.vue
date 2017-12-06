@@ -30,7 +30,7 @@
             <div class="control">
               <label class="label">Merk</label>
               <div class="fullwidth">
-                <v-select data-vv-name="auto.merk"  :searchable="true"  class="fullwidth" v-model="auto.merk" v-validate.initial="auto.merk" data-vv-rules="required" :options="data.merken"></v-select>
+                <v-select data-vv-name="auto.merk"  :searchable="true"  class="fullwidth" v-model="auto.merk" label="naam" v-validate.initial="auto.merk" data-vv-rules="required" :options="data.merken"></v-select>
               </div>
             </div>
             <p class="help is-danger" v-if="errors.has('auto.merk')">{{ errors.first('auto.merk') }}</p>
@@ -55,7 +55,7 @@
             <div class="control">
               <label class="label">Aandrijving</label>
               <div class="fullwidth">
-                <v-select data-vv-name="auto.aandrijving"  :searchable="true"  class="fullwidth" v-model="auto.aandrijving" v-validate.initial="auto.aandrijving" data-vv-rules="required" :options="data.aandrijvingen"></v-select>
+                <v-select data-vv-name="auto.aandrijving"  :searchable="true"  class="fullwidth" v-model="auto.aandrijving" label="naam" v-validate.initial="auto.aandrijving" data-vv-rules="required" :options="data.aandrijvingen"></v-select>
               </div>
             </div>
             <p class="help is-danger" v-if="errors.has('auto.aandrijving')">{{ errors.first('auto.aandrijving') }}</p>
@@ -68,7 +68,7 @@
             <div class="control">
               <label class="label">Specificaties</label>
               <div class="fullwidth">
-                <v-select multiple :searchable="true"  class="fullwidth" v-model="auto.specs" :options="data.specs"></v-select>
+                <v-select multiple :searchable="true"  class="fullwidth" v-model="auto.specs" label="naam" :options="data.specs"></v-select>
               </div>
             </div>
           </div>   
@@ -164,7 +164,7 @@
             <div class="control">
               <label class="label">Voorwaarden</label>
               <div class="fullwidth">
-                <v-select multiple :searchable="true"  class="fullwidth" v-model="auto.voorwaarden" :options="data.voorwaarden"></v-select>
+                <v-select multiple class="fullwidth" v-model="auto.voorwaarden" label="naam" :options="data.voorwaarden"></v-select>
               </div>
             </div>
           </div>   
@@ -301,7 +301,7 @@ export default {
         beschikbaartot: null,
         prijs: null,
         bouwjaar: null,
-        voorwaarden: [],
+        voorwaarden: null,
         fotos: {
           foto1: null,
           foto2: null,
@@ -313,7 +313,8 @@ export default {
         deuren: ["2", "3", "5"],
         zitplaatsen: ["2", "4", "5", "7"],
         aandrijvingen: [],
-        specs: []
+        specs: [],
+        voorwaarden:[]
       },
       errorsoncreate: [],
       formSubmitted: false,
@@ -359,25 +360,37 @@ export default {
         //assign merken
       var merkentemp = [];
         for (var k = 0; k < merken.data.length; k++) {
-          merkentemp.push(merken.data[k].name[0].value,) 
+          merkentemp[k] = {
+            "naam": merken.data[k].name[0].value,
+            'uuid': merken.data[k].uuid[0].value
+          }
         };
         this.data.merken = merkentemp;
         //assign aandrijvingen
         var aandrijvingentemp = []
         for (var k = 0; k < aandrijvingen.data.length; k++) {
-          aandrijvingentemp.push(aandrijvingen.data[k].name[0].value,) 
+          aandrijvingentemp[k] = {
+            "naam": aandrijvingen.data[k].name[0].value,
+            "uuid":aandrijvingen.data[k].uuid[0].value
+          }
         };
         this.data.aandrijvingen = aandrijvingentemp;
         //assign specs
         var specstemp = []
         for (var k = 0; k < specs.data.length; k++) {
-          specstemp.push(specs.data[k].name[0].value,) 
+          specstemp[k] = {
+            "naam": specs.data[k].name[0].value,
+            "uuid": specs.data[k].uuid[0].value
+          }
         };
         this.data.specs = specstemp;
         //assign voorwaarden
         var voorwaardentemp = []
-        for (var k = 0; k < voorwaarden.data.length; k++) {
-          voorwaardentemp.push(voorwaarden.data[k].name[0].value,) 
+        for (var r = 0; r < voorwaarden.data.length; r++) {
+          voorwaardentemp[r] = {
+            "naam": voorwaarden.data[r].name[0].value,
+            "uuid": voorwaarden.data[r].uuid[0].value,
+          }
         };
         this.data.voorwaarden = voorwaardentemp;
       }))
@@ -392,18 +405,23 @@ export default {
       let gemeente = this.auto.locatie.gemeente;
       axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
         params: {
-          address: nummer  + '+' + straat +'+' + gemeente,
+          address: nummer  + '+' + straat + '+' + gemeente,
           KEY: 'AIzaSyCCv6YJdCeG7tz3kVDWQJHsGcIU1LJB1kg'
         }
       })
       .then((locaties) => {
-        if(locaties.data.results.length !== 0){
-          //this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
-          //this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
+                  console.log(locaties.data )
+        if(locaties.data.status == "OK"){
+          console.log('langer dan null')
+          this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
+          this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
           console.log(locaties.data.results[0].geometry.location.lat);
           console.log(locaties.data.results[0].geometry.location.lng);
-
-        }        
+        }
+        if(locaties.data.status == "OVER_QUERY_LIMIT"){
+          console.log("kon locatie niet ophalen")
+          throw error
+        }
       })
       .catch((e) => {
         this.errors.push(e.message)
