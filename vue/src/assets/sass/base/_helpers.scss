@@ -19,6 +19,9 @@
 .blackgrey{
     background-color: $blackgrey
 }
+.inline{
+    display: inline;
+}
 .grey{
     background-color: $darkgrey;
 }
@@ -53,6 +56,9 @@
 }
 .lemonmilk{
     font-family: $lemonmilk;
+}
+.raleway{
+    font-family: $raleway;
 }
 .nopadding{
     padding: 0px!important;

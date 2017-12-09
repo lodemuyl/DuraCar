@@ -1,0 +1,18 @@
+.mijnautoslijst{
+    color: $darkgrey;
+    padding: 1.5rem 0.8rem;
+    h3{
+        font-family: $lemonmilk;
+        font-size: 1.2rem;
+        color: $darkgrey!important;        
+    }
+}
+.hero.is-primary{
+    margin-bottom: 1px;
+    background-color: $green;
+}
+.mijnautos{
+    .fa{
+        margin-left: 15px;
+    }
+}

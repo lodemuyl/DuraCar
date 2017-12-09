@@ -25,4 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
           })
         })
       }
+      //modal voor mijnautos te verwijderen
+    
+      
     });
