@@ -13,6 +13,7 @@ import Gehuurdeautos from '@/components/Gehuurdeautos'
 import Detail from '@/components/Detail'
 import NotFound from '@/components/NotFound'
 import Disclaimer from '@/components/Disclaimer'
+import Update from '@/components/Update'
 
 Vue.use(Router)
 
@@ -62,6 +63,11 @@ export default new Router({
       path: '/Account/Mijnautos',
       name: 'Mijnautos',
       component: Mijnautos
+    },
+    {
+      path: '/Account/Mijnautos/:id',
+      name: 'Update',
+      component: Update
     },
     {
       path: '/Account/Gehuurdeautos',

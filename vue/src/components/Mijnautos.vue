@@ -18,7 +18,7 @@
                 {{ auto.naam }}
               </h3>
               <a @click="modaltoggle(auto.naam, auto.id)"><i class="fa fa-trash fa-lg floatright showModal" aria-hidden="true"></i></a>
-              <router-link :to="{ name: 'Detail', params: { id: auto.id }}"><i class="fa fa-pencil fa-lg floatright showModal" aria-hidden="true"></i></a></router-link>
+              <router-link :to="{ name: 'Update', params: { id: auto.id }}"><i class="fa fa-pencil fa-lg floatright showModal" aria-hidden="true"></i></a></router-link>
               <router-link :to="{ name: 'Detail', params: { id: auto.id }}"><i class="fa fa-eye fa-lg floatright showModal" aria-hidden="true"></i></a></router-link>
             </div>
           </div>
@@ -47,12 +47,13 @@
 <script>
 /* eslint-disable */
 import axios from 'axios'
+const userid = 17
 export default {
   name: 'mijnautos',
   data () {
     return {
       title: 'mijnautos',
-      userid: 17,
+      userid: userid,
       errors: [],
       modal: false,
       click : [
