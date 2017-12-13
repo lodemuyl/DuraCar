@@ -135,7 +135,6 @@ export default {
             Vue.ls.remove('uuid');
             Vue.ls.remove('logout-token');
             Vue.ls.remove('naam');
-            console.log(fresponse)
       })
       .catch( e => {        
               if(e.response.status == 403){

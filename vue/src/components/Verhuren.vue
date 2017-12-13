@@ -264,9 +264,13 @@
 /* eslint-disable */
 import Vue from 'vue'
 import VeeValidate from 'vee-validate'
+import VueLocalStorage from 'vue-ls'
 import axios from 'axios'
 import moment from 'moment'
+Vue.use(VueLocalStorage); 
 const msg = require('vee-validate/dist/locale/nl');
+//csrf
+const csrf = 'O8yxvddF9BuloMC9Cr_xdSdjN40bgTDiLBT5qiKuJrM';
 //aanvulling ip veevalidate voor daterange te kunnen bepalen
 window.moment = moment;
 // nederlandse validatieberichten
@@ -326,22 +330,116 @@ export default {
   methods: {
     //submitevent
     validateBeforeSubmit: function (e) {
-        this.$validator.validateAll()
-        if (!this.errors.any()) {
-          this.geolocatie(); 
-          this.postauto();
-          this.formSubmitted = true; 
-        }
+        this.$validator.validateAll();         
+        this.geolocatie()      
     },
     //aanmaken van nieuwe data in entity autos
     postauto: function () {   
-      
+      axios.post('http://localhost/duracar/entity/autos?_format=json',      
+        {
+          "user_id": [
+              {
+                  "target_id": 17,
+                  "target_type": "user",
+                  "target_uuid": "6a164941-4329-4e7b-a332-40ca16a46df7",
+                  "url": "/duracar/user/17"
+              }
+          ],
+          "name": [
+              {
+                  "value": this.auto.model
+              }
+          ],
+          "field_aandrijving": [
+              {
+                  "target_id": this.auto.aandrijving.id,
+                  "target_type": "aandrijvingen",
+                  "target_uuid": this.auto.aandrijving.uuid,
+                  "url": "/duracar/aandrijvingen/aandrijvingen/"+this.auto.aandrijving.id,
+              }
+          ],
+          "field_aantal_deuren": [
+              {
+                  "value": this.auto.deuren,
+              }
+          ],
+          "field_bouwjaar": [
+              {
+                  "value": this.auto.bouwjaar
+              }
+          ],
+          "field_gemeente": [
+              {
+                  "value": this.auto.locatie.gemeente
+              }
+          ],
+          "field_geolocatie": [
+              {
+                  "lat": this.auto.locatie.la,
+                  "lng": this.auto.locatie.lo
+              }
+          ],
+          "field_huisnummer": [
+              {
+                  "value": this.auto.locatie.nummer,
+              }
+          ],
+          "field_lat2": [],
+          "field_lon2": [],
+          "field_merk": [
+              {
+                  "target_id": this.auto.merk.id,
+                  "target_type": "merken",
+                  "target_uuid": this.auto.merk.uuid,
+                  "url": "/duracar/merken/merken/"+this.auto.merk.id
+              }
+          ],
+          "field_nummerplaat": [
+              {
+                  "value": this.auto.nummerplaat
+              }
+          ],
+          "field_prijs": [
+              {
+                  "value": this.auto.prijs
+              }
+          ],
+          "field_specificaties": [              
+            this.test("specs")
+          ],
+          "field_straat": [
+              {
+                  "value": this.auto.locatie.straat
+              }
+          ],
+          "field_voorwaarden": [
+            this.test("voorwaarden")
+          ],
+          "field_zitplaatsen": [
+              {
+                  "value": this.auto.zitplaatsen
+              }
+          ]
+        },
+        {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-Token': csrf
+        }
+      )
+      .then( fresponse => {
+        this.formSubmitted = true
+        console.log('opgeslaan')
+      })
+      .catch( e => {
+        console.log(e)
+          this.errorsoncreate.push(e.response.statusText)
+      });
     },
     //assign van foto input
     foto: function (event, nummer) {
       if(nummer == 1){
         event.target.files[0] ? this.auto.fotos.foto1 = event.target.files[0] : this.auto.fotos.foto1 = null
-        console.log()
       }else if(nummer == 2){
         event.target.files[0] ? this.auto.fotos.foto2 = event.target.files[0] : this.auto.fotos.foto2 = null
       }else if(nummer == 3){
@@ -358,10 +456,11 @@ export default {
       ])
       .then(axios.spread((merken, aandrijvingen, specs, voorwaarden) => {
         //assign merken
-      var merkentemp = [];
+        var merkentemp = [];
         for (var k = 0; k < merken.data.length; k++) {
           merkentemp[k] = {
             "naam": merken.data[k].name[0].value,
+            "id": merken.data[k].id[0].value,
             'uuid': merken.data[k].uuid[0].value
           }
         };
@@ -371,6 +470,7 @@ export default {
         for (var k = 0; k < aandrijvingen.data.length; k++) {
           aandrijvingentemp[k] = {
             "naam": aandrijvingen.data[k].name[0].value,
+            "id": aandrijvingen.data[k].id[0].value,
             "uuid":aandrijvingen.data[k].uuid[0].value
           }
         };
@@ -380,6 +480,7 @@ export default {
         for (var k = 0; k < specs.data.length; k++) {
           specstemp[k] = {
             "naam": specs.data[k].name[0].value,
+            "id": specs.data[k].id[0].value,
             "uuid": specs.data[k].uuid[0].value
           }
         };
@@ -389,7 +490,8 @@ export default {
         for (var r = 0; r < voorwaarden.data.length; r++) {
           voorwaardentemp[r] = {
             "naam": voorwaarden.data[r].name[0].value,
-            "uuid": voorwaarden.data[r].uuid[0].value,
+            "id": voorwaarden.data[r].id[0].value,
+            "uuid": voorwaarden.data[r].uuid[0].value
           }
         };
         this.data.voorwaarden = voorwaardentemp;
@@ -398,7 +500,42 @@ export default {
         this.errorsoncreate.push(e.message)
       })
     },
-    //bepalen lat en long van adres
+    //test
+    test: function(param){
+      console.log('derin')
+      if(param == "specs"){
+        console.log('specs');
+        let str = "";
+        let l = 0
+        for(l = 0; l < this.auto.specs.length; l++){
+          str += "{";
+          str += "\"target_id\":" + this.auto.specs[l].id + ",";
+          str += "\"target_type\": \"specificaties\",";
+          str += "\"target_uuid\": \"" + this.auto.specs[l].uuid + "\",";
+          str += "\"url\": \"\/duracar\/specificaties\/specificaties\/" + this.auto.specs[l].id + "\"";
+          str += "}";
+          ((this.auto.specs.length-1) == l) ? null : (str += ",");
+        }
+        alert(JSON.parse(str));
+        console.log(JSON.parse(str));
+      }else if(param == "voorwaarden"){
+        console.log('voorwaarden')
+        let str = "";
+        let q = 0
+        for(q = 0; q < this.auto.voorwaarden.length; q++){
+          str += "{";
+          str += "\"target_id\":" + this.auto.voorwaarden[q].id + ",";
+          str += "\"target_type\": \"voorwaarden\",";
+          str += "\"target_uuid\": \"" + this.auto.voorwaarden[q].uuid + "\",";
+          str += "\"url\": \"\/duracar\/voorwaarden\/voorwaarden\/" + this.auto.voorwaarden[q].id + "\"";
+          str += "}";
+        ((this.auto.specs.length-1) == l) ? null : (str += ",");
+        }
+        alert(JSON.parse(str));
+        console.log(JSON.parse(str));
+      }
+    },
+    //bepalen lat en long van adres + aanroepen postauto
     geolocatie: function () {
       let nummer = this.auto.locatie.nummer;
       let straat = this.auto.locatie.straat;
@@ -406,25 +543,24 @@ export default {
       axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
         params: {
           address: nummer  + '+' + straat + '+' + gemeente,
-          KEY: 'AIzaSyCCv6YJdCeG7tz3kVDWQJHsGcIU1LJB1kg'
+          KEY: 'AIzaSyCgHQkXEYFc7pv8sKk3QCWNHj6Nrn9d1BY'
         }
       })
       .then((locaties) => {
-                  console.log(locaties.data )
         if(locaties.data.status == "OK"){
-          console.log('langer dan null')
           this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
           this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
-          console.log(locaties.data.results[0].geometry.location.lat);
-          console.log(locaties.data.results[0].geometry.location.lng);
+          console.log(locaties.data.results[0].geometry.location.lat)
+          //this.postauto()
+          this.test('specs');
+          this.test('voorwaarden')
         }
         if(locaties.data.status == "OVER_QUERY_LIMIT"){
-          console.log("kon locatie niet ophalen")
-          throw error
+          this.errorsoncreate.push("Probleem bij het ophalen van jouw locatie")
         }
       })
       .catch((e) => {
-        this.errors.push(e.message)
+        this.errorsoncreate.push(e.message)
       })
     }   
   }

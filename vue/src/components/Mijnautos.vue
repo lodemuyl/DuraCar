@@ -47,7 +47,7 @@
 <script>
 /* eslint-disable */
 import axios from 'axios'
-const userid = 17
+const userid = 1
 export default {
   name: 'mijnautos',
   data () {
@@ -83,7 +83,7 @@ export default {
     },
     verwijderen: function(id){
       if (id) {
-        var url = `http://localhost/duracar/autolijst/` + id;
+        var url = `http://localhost/duracar/autos/autos/` + id;
         axios.delete(url)
         .then(() => {
           console.log('verwijderd');
