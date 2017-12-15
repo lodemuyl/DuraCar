@@ -40,8 +40,7 @@
           </div>
           <div class="content absolute huurcontent">          
             <br/>
-            <p>{{ auto.straat }} {{ auto.nummer }} - {{ auto.gemeente }}</p>
-            
+            <p>{{ auto.straat }} {{ auto.nummer }} - {{ auto.gemeente }}</p>            
           </div>
         </div>
       </router-link>
@@ -69,13 +68,14 @@ export default {
     this.apilist();
   },
   methods: {
+    //ophalen alle nodige api's
     apilist: function () {
       axios.all([
         axios.get(`http://localhost/duracar/autolijst`),
         axios.get(`http://localhost/duracar/merkenlijst`)
       ])
       .then(axios.spread((autolijst, merken) => {
-      //autos
+      //autos toevoegen aan de array autolijst
         var autostemp = [];
         for (var k = 0; k < autolijst.data.length; k++) {
           autostemp[k] = {
@@ -89,7 +89,7 @@ export default {
           }
         };
         this.autolijst = autostemp;     
-      //merken ophalen
+      //merken toevoegen aan de array merklijst
         var merkentemp = [];
         for (var k = 0; k < merken.data.length; k++) {
           merkentemp[merken.data[k].id[0].value] = {
@@ -106,6 +106,7 @@ export default {
     }
   },
   computed: {
+    //filtering op de client van automerken
     filterautos() {
       let filtered = []
       if(this.filter != null){    
@@ -126,7 +127,6 @@ export default {
         filtered = this.autolijst
         return filtered
       }
-
     }
   }
 }

@@ -10,6 +10,30 @@ margin-bottom: 2rem!important;
 img{
     width: 100vw;
 }
+.vdp-datepicker__calendar{
+background-color: $white;
+color: $green;
+}
+.vdp-datepicker__calendar{
+    left: 20px;
+}
+#rightcalendar{
+    .vdp-datepicker__calendar{
+        left: -150px;   
+    }
+}
+.vdp-datepicker__calendar .cell.selected, .vdp-datepicker__calendar .cell.selected.highlighted, .vdp-datepicker__calendar .cell.selected:hover{
+  color: white;
+  background-color: $red!important;  
+}
+.vdp-datepicker__calendar{
+    header{
+        width: 300px
+    }
+}
+.vdp-datepicker{
+    text-align: center!important;
+}
 .detail{
     ul {
         list-style: none;

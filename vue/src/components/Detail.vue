@@ -17,7 +17,6 @@
             <img :src="afbeeldingen['picture' + Math.abs(afbeeldingnummer)]"/>
           </div>
         </div>
-
         <div class="card noshadow grey white">
           <div class="card-content">
             <div class="content">
@@ -25,7 +24,7 @@
                 <div class="columns is-mobile">
                   <div class="column customcolumn">
                     <h2 class="alineatitle bold red">Periode beschikbaar</h2>
-                    <p>van <span class="bold">12/5/2017</span> tot <span class="bold">13/5/2017</span></p>
+                    <p>van <span class="bold"> {{ beschikbaarvan | datumfilter }} </span> tot <span class="bold"> {{ beschikbaartot | datumfilter }} </span></p>
                   </div>
                 </div>    
               <div class="columns is-mobile">
@@ -87,18 +86,18 @@
                      </li>
                   </ul>
                 </div>
-              </div>                                 
+              </div>     
                     <div class="columns is-multiline is-mobile datepicker">
                       <div class=" column is-half customcolumn">
-                        <h2 class="alineatitle red bold center">Beschikbaar van</h2>
+                        <h2 class="alineatitle red bold center">Huren van</h2>
                         <div  class="center">
-                          <input type="date" name="van"  max="2018-11-28">
+                          <datepicker language="nl" v-model="hurenvan" :format="datepickerformat" :disabled="disabled"></datepicker>                            
                         </div>
                       </div>
-                      <div class=" column is-half customcolumn">
-                        <h2 class="alineatitle red bold center">Beschikbaar tot</h2>
+                      <div class=" column is-half customcolumn" id="rightcalendar">
+                        <h2 class="alineatitle red bold center">Huren tot</h2>
                         <div class="center">
-                          <input  type="date" name="tot" max="2018-11-28">
+                          <datepicker language="nl" v-model="hurentot" :format="datepickerformat" :disabled="disabled"></datepicker>                            
                         </div>
                       </div>
                     </div> 
@@ -129,7 +128,15 @@ export default {
       zitplaatsen: null,
       nummerplaat: null,
       aandrijving: null,
+      beschikbaarvan: null,
+      beschikbaartot: null,
+      hurenvan: null,
+      hurentot: null,
       voorwaarden: [],
+      disabled: {
+        to: null,
+        from: null
+      },    
       specs: [],
       merk: null,
       locatie: {
@@ -155,6 +162,7 @@ export default {
     this.autosget();
   },
   methods: {
+    //ophalen alle api's voor detail kunnen weer te geven
     autosget: function() {
       var url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json'
       axios.all([
@@ -208,7 +216,13 @@ export default {
         this.zitplaatsen = autos.data.field_zitplaatsen[0].value;
         this.nummerplaat = autos.data.field_nummerplaat[0].value;
         this.title = autos.data.name[0].value;
-        this.prijs = autos.data.field_prijs[0].value;     
+        var beschikbaarvan = autos.data.field_beschikbaarvan[0].value;
+        var beschikbaartot = autos.data.field_beschikbaartot[0].value;
+        this.beschikbaarvan = new Date(beschikbaarvan);
+        this.beschikbaartot = new Date(beschikbaartot);
+        this.disabled.from = new Date(beschikbaartot.substring(0,4), beschikbaartot.substring(5,7)-1, beschikbaartot.substring(8,10)+1);
+        this.disabled.to = new Date(beschikbaarvan.substring(0,4), beschikbaarvan.substring(5,7)-1, beschikbaarvan.substring(8,10));
+        this.prijs = autos.data.field_prijs[0].value;
         //aan de hand van id de voorwaarden ophalen    
           if (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_voorwaarden"]) {
             let voorwaardentemp = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_voorwaarden"];
@@ -236,7 +250,8 @@ export default {
           }    
 
       }))
-      .catch(error => {    
+      .catch(error => {  
+        console.log(error)  
         this.errors.push(error.message)
         
       })  
@@ -255,8 +270,18 @@ export default {
       }else{
         this.afbeeldingnummer -= 1
       }
-    }
+    },
+    //custom format calendar
+    datepickerformat: function(date) {
+      return moment(date).format('D MMMM  YYYY');
+    },
+  },
+  filters: {
+    datumfilter: function(val){      
+    if (!val) return ''
+    return moment(String(val)).format('MM/DD/YYYY')
   }
+}
 }
 </script>
 
