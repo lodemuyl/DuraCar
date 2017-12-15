@@ -62,7 +62,6 @@ export default {
       autolijst: [],
       merklijst: [],
       geenfilterbericht: null,
-      filterlijst: [],
       errors: []
     }
   },
@@ -96,21 +95,21 @@ export default {
           merkentemp[merken.data[k].id[0].value] = {
             id: merken.data[k].id[0].value,
             naam: merken.data[k].name[0].value,
-            logo: merken.data[k].field_logo[0].url
+            logo: merken.data[k].field_merklogo[0].url
           }
         };
         this.merklijst = merkentemp;
       }))
       .catch((e) => {
-        this.errors.push(e.response.statusText)
+        this.errors.push(e.message)
       })
     }
   },
   computed: {
     filterautos() {
       let filtered = []
-      if(this.filter){
-        
+      if(this.filter != null){    
+        console.log('in filter')    
         filtered =  this.autolijst.filter(auto => {
          if(auto.merkid == this.filter.id){
            this.geenfilterbericht = null
@@ -120,9 +119,12 @@ export default {
         if(filtered.length == 0){
           this.geenfilterbericht = "Er zijn geen auto's gevonden van het merk " + this.filter.naam 
         }
-        return filtered
+        return filtered 
       }else{
-        return this.autolijst
+        console.log("geen filter")
+        this.geenfilterbericht = null
+        filtered = this.autolijst
+        return filtered
       }
 
     }
