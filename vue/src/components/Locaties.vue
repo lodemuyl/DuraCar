@@ -94,28 +94,6 @@ export default {
     showPosition : function(position){   
         this.mylat = position.coords.latitude
         this.mylon = position.coords.longitude      
-    },
-    locaties: function (nummer, straat, gemeente, j) {
-      console.log()
-      axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
-        params: {
-          address: nummer + '+' + straat +'+' + gemeente,
-          KEY: 'AIzaSyCCv6YJdCeG7tz3kVDWQJHsGcIU1LJB1kg'
-        }
-      })
-      .then((locaties) => {
-        if(locaties.data.results.length !== 0){
-          console.log("------");
-          console.log(j)
-          console.log(nummer + " + " + straat + " + " + gemeente );
-          console.log(locaties.data.results[0].geometry.location.lat);
-          console.log(locaties.data.results[0].geometry.location.lng);
-          console.log("------");
-        }        
-      })
-      .catch((e) => {
-        this.errors.push(e.message)
-      })
     }
     }
 }

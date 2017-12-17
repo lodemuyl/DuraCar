@@ -25,6 +25,14 @@
         
       </section> 
     </div>
+    <div v-if="autos.length == 0">
+      <article class="message is-warning">
+        <div class="message-body">
+          <h1>Dag {{ user }} ,je hebt nog geen auto's in de aanbieding</h1>
+          <router-link to="/Verhuren">Voeg een auto toe</router-link>
+        </div>
+      </article>      
+    </div>
     <div  class="modal" v-bind:class="{ 'is-active': modal }">
       <div class="modal-background"></div>
       <div class="modal-card">
@@ -46,14 +54,17 @@
 
 <script>
 /* eslint-disable */
+import VueLocalStorage from 'vue-ls'
+import Vue from 'vue'
+Vue.use(VueLocalStorage); 
 import axios from 'axios'
-const userid = 1
 export default {
   name: 'mijnautos',
   data () {
     return {
       title: 'mijnautos',
-      userid: userid,
+      userid: Vue.ls.get('id'),
+      user: null,
       errors: [],
       modal: false,
       click : [
@@ -66,7 +77,14 @@ export default {
     }
   },
   created () {
+    if(!Vue.ls.get('id')){
+       this.$router.push('/Account/login')
+    }
     this.autofilter();
+    var hash = Vue.ls.get('auth');
+    var unhash = String(window.atob(hash));
+    var index = unhash.indexOf(":");
+    this.user = unhash.substring(0, unhash.indexOf(":"));
   },
   methods: {
     modaltoggle: function(naam, id) {

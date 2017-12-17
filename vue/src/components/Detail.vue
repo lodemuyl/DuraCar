@@ -216,11 +216,11 @@ export default {
         this.zitplaatsen = autos.data.field_zitplaatsen[0].value;
         this.nummerplaat = autos.data.field_nummerplaat[0].value;
         this.title = autos.data.name[0].value;
-        var beschikbaarvan = autos.data.field_beschikbaarvan[0].value;
-        var beschikbaartot = autos.data.field_beschikbaartot[0].value;
+        let beschikbaarvan = autos.data.field_beschikbaarvan[0].value;
+        let beschikbaartot = autos.data.field_beschikbaartot[0].value;
         this.beschikbaarvan = new Date(beschikbaarvan);
         this.beschikbaartot = new Date(beschikbaartot);
-        this.disabled.from = new Date(beschikbaartot.substring(0,4), beschikbaartot.substring(5,7)-1, beschikbaartot.substring(8,10)+1);
+        this.disabled.from = new Date(beschikbaartot.substring(0,4), beschikbaartot.substring(5,7)-1, beschikbaartot.substring(8,10));
         this.disabled.to = new Date(beschikbaarvan.substring(0,4), beschikbaarvan.substring(5,7)-1, beschikbaarvan.substring(8,10));
         this.prijs = autos.data.field_prijs[0].value;
         //aan de hand van id de voorwaarden ophalen    

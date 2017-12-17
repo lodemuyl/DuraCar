@@ -22,6 +22,11 @@ color: $green;
         left: -150px;   
     }
 }
+.vdp-datepicker input{
+    width: 100%;
+    padding: 5px 0px;
+    border: 1px solid $darkgrey;
+}
 .vdp-datepicker__calendar .cell.selected, .vdp-datepicker__calendar .cell.selected.highlighted, .vdp-datepicker__calendar .cell.selected:hover{
   color: white;
   background-color: $red!important;  

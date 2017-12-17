@@ -24,8 +24,8 @@
       <router-link :to="{ name: 'Detail', params: { id: auto.id }}" class="nodecoration">
         <div class="card-image">
           <figure class="image merklogowrapper">
-            <img class="merklogo" :src="merklijst[auto.merkid].logo">
-          </figure>
+            <img class="merklogo" :src="merklijst[auto.merkid].logo" >
+          </figure>  
         </div>
         <div class="card-content absolute huurcard overlay">
         </div>
@@ -34,7 +34,7 @@
             <div class="media-left">
             </div>
             <div class="media-content ">
-              <p class="title huurtitle">{{ auto.naam }}  <span class="merkachtervoegsel">{{ merklijst[auto.merkid].naam }}</span></p>
+              <p class="title huurtitle"> {{ auto.naam }} <span class="merkachtervoegsel"></span></p>
               <p class="prijs right bold">€{{ auto.prijs }}/Dag</p>
             </div>
           </div>
@@ -122,7 +122,6 @@ export default {
         }
         return filtered 
       }else{
-        console.log("geen filter")
         this.geenfilterbericht = null
         filtered = this.autolijst
         return filtered

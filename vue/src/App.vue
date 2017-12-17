@@ -26,11 +26,11 @@
             <div class="navbar-item has-dropdown is-hoverable">            
                 <p class="routerlink navbar-link white">Account</p>            
               <div class="navbar-dropdown is-right">
-                <router-link  class="routerlink navbar-item" to="/Account/Login">Login</router-link>
-                <router-link  class="routerlink navbar-item" to="/Account/Registreer">Registreer</router-link>  
-                <router-link  class="routerlink navbar-item" to="/Account">Mijn account</router-link>           
-                <router-link  class="routerlink navbar-item" to="/Account/Mijnautos">Mijn auto's</router-link>
-                <router-link  class="routerlink navbar-item" to="/Account/Gehuurdeautos">Gehuurde Auto's</router-link>
+                <router-link  v-show="!user.csrf_token" class="routerlink navbar-item" to="/Account/Login">Login</router-link>
+                <router-link  v-show="!user.csrf_token" class="routerlink navbar-item" to="/Account/Registreer">Registreer</router-link>  
+                <router-link  v-show="user.csrf_token" class="routerlink navbar-item" to="/Account">Mijn account</router-link>           
+                <router-link  v-show="user.csrf_token" class="routerlink navbar-item" to="/Account/Mijnautos">Mijn auto's</router-link>
+                <router-link  v-show="user.csrf_token" class="routerlink navbar-item" to="/Account/Gehuurdeautos">Gehuurde Auto's</router-link>
               </div>
             </div>
           </div>
@@ -61,6 +61,8 @@
   </div>
 </template>
 <script>
+/* eslint-disable */
+
 import VueLocalStorage from 'vue-ls'
 import Vue from 'vue'
 Vue.use(VueLocalStorage)
@@ -72,8 +74,25 @@ export default {
       user: {
         'name': null,
         'csrf_token': null,
-        'logout_token': null
+        'logout_token': null,
       }
+    }
+  },
+  created () {
+    this.check();
+  },
+  methods: {
+    check: function(){
+    if(Vue.ls.get('id')){
+      this.user.csrf_token = Vue.ls.get('csrftoken');
+      this.user.logout_token = Vue.ls.get('logout-token');
+      this.ingelogd = true;
+    }else{
+      this.user.csrf_token = null;
+      this.user.logout_token = null;
+      this.user.name = null;
+      this.ingelogd = false;
+    }
     }
   }
 }

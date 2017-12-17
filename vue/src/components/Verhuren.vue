@@ -85,7 +85,7 @@
                 </a>
               </p>
               <p class="control is-expanded">
-                <input disabled v-model="auto.gsm" class="input" type="text" >
+                <input disabled v-model="gsm" class="input" type="text" >
               </p>
             </div>
           </div>   
@@ -133,12 +133,14 @@
       <div class="columns is-mobile">
           <div class="column is-5 is-offset-1 center">
             <label class="label left">Beschikbaar van</label>
-            <input v-model="auto.beschikbaarvan" type="date" data-vv-name="auto.beschikbaarvan"  v-validate.initial="auto.beschikbaarvan" data-vv-rules="required"><br>         
+            <datepicker language="nl" v-model="auto.beschikbaarvan" :format="datepickerformat" :disabled="disabled" data-vv-name="auto.beschikbaarvan"  v-validate.initial="auto.beschikbaarvan" data-vv-rules="required"></datepicker>                            
+            <br>         
             <p class="help is-danger" v-if="errors.has('auto.beschikbaarvan')">{{ errors.first('auto.beschikbaarvan') }}</p> 
           </div>
-          <div class="column is-5 center">
+          <div class="column is-5 center" id="rightcalendar">
             <label class="label left">Beschikbaar tot</label>
-            <input v-model="auto.beschikbaartot" type="date" data-vv-name="auto.beschikbaartot"  v-validate.initial="auto.beschikbaartot" data-vv-rules="required"><br>         
+            <datepicker language="nl" v-model="auto.beschikbaartot" :format="datepickerformat" :disabled="disabled" data-vv-name="auto.beschikbaartot"  v-validate.initial="auto.beschikbaartot" data-vv-rules="required"></datepicker>                            
+            <br>
             <p class="help is-danger" v-if="errors.has('auto.beschikbaartot')">{{ errors.first('auto.beschikbaartot') }}</p>
           </div>              
       </div>
@@ -287,6 +289,10 @@ export default {
   data () {
     return {
       title: 'Verhuren',
+      gsm: Vue.ls.get('gsm'),
+      disabled: {
+         to: null
+      },
       auto: {
         nummerplaat: null,
         merk: null,
@@ -295,7 +301,6 @@ export default {
         deuren: null,
         aandrijving: null,
         specs: [],
-        gsm: '496060458',
         locatie: {
           straat: null,
           nummer: null,
@@ -312,6 +317,10 @@ export default {
           foto3: null,
         }
       },
+      user: {
+        id: null,
+        uuid: null
+      },
       data: {
         merken: [],
         deuren: ["2", "3", "5"],
@@ -325,24 +334,34 @@ export default {
     }
   },
   created () {
+    if(!Vue.ls.get('id')){
+       this.$router.push('/Account/login')
+    }
     this.selectdata();
+    //verhuur pas mogelijk maken vanaf vandaag
+    var vandaag = new Date();
+    this.disabled.to = new Date(vandaag.getFullYear(), vandaag.getMonth(), vandaag.getDate())
   },
   methods: {
     //submitevent
     validateBeforeSubmit: function (e) {
-        this.$validator.validateAll();         
-        this.geolocatie()      
+        this.$validator.validateAll();  
+        if (!this.errors.any() && !this.errorsoncreate.length > 0) {
+         this.geolocatie()      
+         this.formSubmitted = true
+        }       
     },
     //aanmaken van nieuwe data in entity autos
     postauto: function () {   
+      console.log('postauto')
       axios.post('http://localhost/duracar/entity/autos?_format=json',      
         {
           "user_id": [
               {
-                  "target_id": 17,
+                  "target_id": 21,
                   "target_type": "user",
-                  "target_uuid": "6a164941-4329-4e7b-a332-40ca16a46df7",
-                  "url": "/duracar/user/17"
+                  "target_uuid": "4035d258-e089-400a-ae47-97455980acde",
+                  "url": "/duracar/user/21"
               }
           ],
           "name": [
@@ -363,7 +382,7 @@ export default {
                   "value": this.auto.deuren,
               }
           ],
-          "field_bouwjaar": [
+          "field_b": [
               {
                   "value": this.auto.bouwjaar
               }
@@ -384,8 +403,6 @@ export default {
                   "value": this.auto.locatie.nummer,
               }
           ],
-          "field_lat2": [],
-          "field_lon2": [],
           "field_merk": [
               {
                   "target_id": this.auto.merk.id,
@@ -404,8 +421,18 @@ export default {
                   "value": this.auto.prijs
               }
           ],
+          "field_beschikbaartot": [
+            {
+                "value": this.auto.beschikbaartot.substring(0,10)
+            }
+          ],
+          "field_beschikbaarvan": [
+              {
+                  "value": this.auto.beschikbaarvan.substring(0,10)
+              }
+          ],
           "field_specificaties": [              
-            this.test("specs")
+            this.specvoorw("specs")
           ],
           "field_straat": [
               {
@@ -413,7 +440,7 @@ export default {
               }
           ],
           "field_voorwaarden": [
-            this.test("voorwaarden")
+            this.specvoorw("voorwaarden")
           ],
           "field_zitplaatsen": [
               {
@@ -428,7 +455,7 @@ export default {
         }
       )
       .then( fresponse => {
-        this.formSubmitted = true
+        this.errorsoncreate = []
         console.log('opgeslaan')
       })
       .catch( e => {
@@ -485,6 +512,9 @@ export default {
           }
         };
         this.data.specs = specstemp;
+        //assign user info from local storage
+        this.user.id = Vue.ls.get('id');
+        this.user.uuid = Vue.ls.get('uuid');
         //assign voorwaarden
         var voorwaardentemp = []
         for (var r = 0; r < voorwaarden.data.length; r++) {
@@ -500,39 +530,33 @@ export default {
         this.errorsoncreate.push(e.message)
       })
     },
-    //test
-    test: function(param){
-      console.log('derin')
+    //specificaties en voorwaarden omvormen naar object voor weg te schrijven
+    specvoorw: function(param){
       if(param == "specs"){
         console.log('specs');
-        let str = "";
+        let specsarray = [];
         let l = 0
         for(l = 0; l < this.auto.specs.length; l++){
-          str += "{";
-          str += "\"target_id\":" + this.auto.specs[l].id + ",";
-          str += "\"target_type\": \"specificaties\",";
-          str += "\"target_uuid\": \"" + this.auto.specs[l].uuid + "\",";
-          str += "\"url\": \"\/duracar\/specificaties\/specificaties\/" + this.auto.specs[l].id + "\"";
-          str += "}";
-          ((this.auto.specs.length-1) == l) ? null : (str += ",");
+          let str = {};
+          str["target_id"] = this.auto.specs[l].id;
+          str["target_type"] = "specificaties";
+          str["target_uuid"] = this.auto.specs[l].uuid;
+          str["url"] = "/duracar/specificaties/specificaties/" + this.auto.specs[l].id;
+          specsarray.push(str)
         }
-        alert(JSON.parse(str));
-        console.log(JSON.parse(str));
+        return specsarray;
       }else if(param == "voorwaarden"){
-        console.log('voorwaarden')
-        let str = "";
+        let voorwaardenarray = [];
         let q = 0
         for(q = 0; q < this.auto.voorwaarden.length; q++){
-          str += "{";
-          str += "\"target_id\":" + this.auto.voorwaarden[q].id + ",";
-          str += "\"target_type\": \"voorwaarden\",";
-          str += "\"target_uuid\": \"" + this.auto.voorwaarden[q].uuid + "\",";
-          str += "\"url\": \"\/duracar\/voorwaarden\/voorwaarden\/" + this.auto.voorwaarden[q].id + "\"";
-          str += "}";
-        ((this.auto.specs.length-1) == l) ? null : (str += ",");
+         let str = {};
+         str["target_id"] = this.auto.voorwaarden[q].id;
+         str["target_type"] = "voorwaarden";
+         str["target_uuid"] = this.auto.voorwaarden[q].uuid;
+         str["url"] = "/duracar/voorwaarden/voorwaarden/" + this.auto.voorwaarden[q].id;
+         voorwaardenarray.push(str);
         }
-        alert(JSON.parse(str));
-        console.log(JSON.parse(str));
+        return voorwaardenarray
       }
     },
     //bepalen lat en long van adres + aanroepen postauto
@@ -551,18 +575,26 @@ export default {
           this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
           this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
           console.log(locaties.data.results[0].geometry.location.lat)
-          //this.postauto()
-          this.test('specs');
-          this.test('voorwaarden')
+          this.postauto()
         }
         if(locaties.data.status == "OVER_QUERY_LIMIT"){
-          this.errorsoncreate.push("Probleem bij het ophalen van jouw locatie")
+          this.errorsoncreate.push("Probleem bij het ophalen van jouw locatie probeer opnieuw")
         }
       })
       .catch((e) => {
         this.errorsoncreate.push(e.message)
       })
-    }   
+    },
+    //custom format calendar
+    datepickerformat: function(date) {
+      return moment(date).format('D MMMM  YYYY');
+    } 
+  },
+  filters: {
+    datumfilter: function(val){      
+    if (!val) return ''
+    return moment(String(val)).format('MM/DD/YYYY')
   }
+}
 }
 </script>

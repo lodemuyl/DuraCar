@@ -122,6 +122,11 @@ export default {
       errorregister: []
     }
   },
+  created () {
+    if(Vue.ls.get('id')){
+       this.$router.push('/Account')
+    }
+  },
   methods: {
     validateBeforeSubmit (e) {
         this.$validator.validateAll()
