@@ -18,7 +18,7 @@
           <div class="field">
             <label class="label">Nummerplaat</label>
             <div class="control">
-              <input data-vv-name="nummerplaat" v-model="auto.nummerplaat" v-validate.initial="auto.nummerplaat" data-vv-rules="required|max:7"  class="input" type="text" placeholder="1hln489">
+              <input data-vv-name="nummerplaat" v-model="auto.nummerplaat" v-validate.initial="auto.nummerplaat" data-vv-rules="required|max:6"  class="input" type="text" placeholder="1hln489">
             </div>
             <p class="help is-danger" v-if="errors.has('auto.nummerplaat')">{{ errors.first('auto.nummerplaat') }}</p>
           </div>   
@@ -256,6 +256,7 @@
       <div class="column is-10 is-offset-1">   
         <div class="notification is-primary">
           De auto van het type {{ auto.model }} is aangemaakt.
+          <router-link to="Account/mijnautos">Ga naar mijn auto's</router-link>
         </div>              
       </div>     
     </div>
@@ -346,15 +347,16 @@ export default {
     //submitevent
     validateBeforeSubmit: function (e) {
         this.$validator.validateAll();  
-        if (!this.errors.any() && !this.errorsoncreate.length > 0) {
-         this.geolocatie()      
-         this.formSubmitted = true
+        if (!this.errors.any()) {
+         this.geolocatie() 
+         if(!this.errorsoncreate.length > 0){
+          this.formSubmitted = true
+         }        
         }       
     },
     //aanmaken van nieuwe data in entity autos
-    postauto: function () {   
-      console.log('postauto')
-      axios.post('http://localhost/duracar/entity/autos?_format=json',      
+    postauto: function () {
+      axios.post('http://localhost/duracar/entity/autos?_format=json', 
         {
           "user_id": [
               {
@@ -423,25 +425,21 @@ export default {
           ],
           "field_beschikbaartot": [
             {
-                "value": this.auto.beschikbaartot.substring(0,10)
+                "value": this.filteryear(this.auto.beschikbaartot)
             }
           ],
           "field_beschikbaarvan": [
               {
-                  "value": this.auto.beschikbaarvan.substring(0,10)
+                  "value": this.filteryear(this.auto.beschikbaarvan)
               }
           ],
-          "field_specificaties": [              
-            this.specvoorw("specs")
-          ],
+          "field_specificaties": this.specvoorw("specs"),
           "field_straat": [
               {
                   "value": this.auto.locatie.straat
               }
           ],
-          "field_voorwaarden": [
-            this.specvoorw("voorwaarden")
-          ],
+          "field_voorwaarden": this.specvoorw("voorwaarden"),
           "field_zitplaatsen": [
               {
                   "value": this.auto.zitplaatsen
@@ -449,14 +447,12 @@ export default {
           ]
         },
         {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'X-CSRF-Token': csrf
+          'Content-Type': 'application/json'
         }
       )
-      .then( fresponse => {
+      .then(() => {
         this.errorsoncreate = []
-        console.log('opgeslaan')
+        console.log('opgeslaan');
       })
       .catch( e => {
         console.log(e)
@@ -533,7 +529,6 @@ export default {
     //specificaties en voorwaarden omvormen naar object voor weg te schrijven
     specvoorw: function(param){
       if(param == "specs"){
-        console.log('specs');
         let specsarray = [];
         let l = 0
         for(l = 0; l < this.auto.specs.length; l++){
@@ -559,6 +554,13 @@ export default {
         return voorwaardenarray
       }
     },
+    //filteren van specifieke datum uit beschikbaarheid van calender
+    filteryear: function(param) {
+      var vandaag = param;
+      var maand = param.getMonth() + 1;
+      let date = String(vandaag.getFullYear() + "-" + maand +"-"+ vandaag.getDate())
+      return date
+    },
     //bepalen lat en long van adres + aanroepen postauto
     geolocatie: function () {
       let nummer = this.auto.locatie.nummer;
@@ -574,8 +576,8 @@ export default {
         if(locaties.data.status == "OK"){
           this.auto.locatie.la = locaties.data.results[0].geometry.location.lat;
           this.auto.locatie.lo = locaties.data.results[0].geometry.location.lng;
-          console.log(locaties.data.results[0].geometry.location.lat)
-          this.postauto()
+          console.log('latitudeee ' + locaties.data.results[0].geometry.location.lat);
+          this.postauto();          
         }
         if(locaties.data.status == "OVER_QUERY_LIMIT"){
           this.errorsoncreate.push("Probleem bij het ophalen van jouw locatie probeer opnieuw")

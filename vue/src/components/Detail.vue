@@ -30,7 +30,7 @@
               <div class="columns is-mobile">
                 <div class="column customcolumn">
                   <h2 class="alineatitle bold red">Eigenaar</h2>
-                  <p>door X</p>
+                  <p>{{ eigenaar.naam }}</p>
                 </div>
                 <div class="column customcolumn">
                   <h2 class="alineatitle red bold">Prijs</h2>
@@ -40,7 +40,7 @@
               <div class="columns is-mobile">
                 <div class="column customcolumn">
                   <h2 class="alineatitle red bold">GSM</h2>
-                  <p>{{  }}</p>
+                  <p>{{ eigenaar.gsm }}</p>
                 </div>
                 <div class="column customcolumn">
                   <h2 class="alineatitle red bold">Locatie</h2>
@@ -125,6 +125,10 @@ export default {
       id: this.$route.params.id,
       prijs: null,
       deuren: null,
+      eigenaar: {
+        naam: null,
+        gsm: null
+      },
       zitplaatsen: null,
       nummerplaat: null,
       aandrijving: null,
@@ -170,9 +174,10 @@ export default {
         axios.get(`http://localhost/duracar/voorwaarden`),
         axios.get(`http://localhost/duracar/specificaties`),
         axios.get(`http://localhost/duracar/merkenlijst`),
-        axios.get(`http://localhost/duracar/aandrijvingenlijst`)
+        axios.get(`http://localhost/duracar/aandrijvingenlijst`),
+        axios.get(` http://localhost/duracar/gebruikers`)
       ])
-      .then(axios.spread((autos, voorwaarden, specs, merken, aandrijvingen) => {
+      .then(axios.spread((autos, voorwaarden, specs, merken, aandrijvingen, gebruikers) => {
          //voorwaarden ophalen
         var voorwaardentemp = [];
         for (var i = 0; i < voorwaarden.data.length; i++) {
@@ -241,6 +246,17 @@ export default {
               }
             }
           }
+        //auteur assignen
+        for (var m = 0; m < gebruikers.data.length; m++) {
+           let url =autos.data._links['http://localhost/duracar/rest/relation/autos/autos/user_id'][0].href
+           let index1 = url.indexOf('duracar/user/');
+           let index2 = url.indexOf('?_format=hal_json');
+           let id= url.substring(index1 + 13, index2)
+          if(gebruikers.data[m].uid[0].value == id){
+            this.eigenaar.naam = gebruikers.data[m].name[0].value;
+            this.eigenaar.gsm = "0" + String(gebruikers.data[m].field_gsm_nummer[0].value);
+          }
+        };
         //aandrijving
           if (autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"]) {
             let aandrijvingtemp = autos.data._links["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"]; 
