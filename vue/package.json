@@ -28,6 +28,7 @@
     "vue-moment": "^3.0.0",
     "vue-router": "^3.0.1",
     "vue-select": "sagalbot/vue-select",
+    "vue-star-rating": "^1.5.1",
     "vue2-leaflet": "^0.0.57",
     "vuejs-datepicker": "^0.9.21",
     "vuejs-range-datepickers": "^2.0.0"

@@ -105,9 +105,32 @@
                     </div>   
                     <div class="columns is-multiline is-mobile">
                       <div class=" column customcolumn">                     
-                        <button class="button fullwidth">Huur mij nu!</button>
+                        <button class="buttonhuur fullwidth">Huur mij nu!</button>
                       </div>
-                    </div>                
+                    </div>
+              <div class="reviews">
+                <h1 class="center lemonmilk subtitle red">Reviews</h1>
+                <div v-for="review in reviews" class="columns is-multiline is-mobile reviewpannel">
+                  <div class="column"> 
+                    <h2 class="alineatitle red bold">{{ review.auteur }}</h2>
+                    <p>{{ review.beschrijving }}</p>
+                    <div id="sterren">                  
+                      <star-rating v-bind:star-size="20" active-color="#FF5A5F" v-bind:rating="review.rating"></star-rating>        
+                    </div>
+                  </div>
+                </div>
+                <div v-if="reviewauteur" class="columns is-multiline is-mobile reviewpannelwrite">     
+                  <div class="column"> 
+                    <h2 class="alineatitle red bold">{{ reviewauteur }}</h2>
+                    <input class="input" v-model="review"></input>                   
+                    <div id="sterrenplaats">                  
+                      <star-rating v-bind:star-size="20" active-color="#FF5A5F" v-model="score"></star-rating>        
+                    </div>
+                     <button class="button is-link fullwidth plaatsen">Plaats</button>
+                  </div>
+                 
+                </div>
+              </div>                
             </div>
           </div>
         </div>
@@ -116,7 +139,8 @@
 </template>
 <script>
 /* eslint-disable */
-import axios from 'axios'            
+import axios from 'axios'
+import Vue from 'vue'        
 export default {
   name: 'detail',
   data () {
@@ -124,6 +148,10 @@ export default {
       title: 'detail',
       id: this.$route.params.id,
       prijs: null,
+      reviewauteur: null,
+      score: 4,
+      review: null,
+      reviews: [],
       deuren: null,
       eigenaar: {
         naam: null,
@@ -168,16 +196,22 @@ export default {
   methods: {
     //ophalen alle api's voor detail kunnen weer te geven
     autosget: function() {
-      var url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json'
+      var url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json';
+      var reviewsurl = 'http://localhost/duracar/reviews/' + this.id;
       axios.all([
         axios.get(url),
         axios.get(`http://localhost/duracar/voorwaarden`),
         axios.get(`http://localhost/duracar/specificaties`),
         axios.get(`http://localhost/duracar/merkenlijst`),
         axios.get(`http://localhost/duracar/aandrijvingenlijst`),
-        axios.get(` http://localhost/duracar/gebruikers`)
+        axios.get(`http://localhost/duracar/gebruikers`),
+        axios.get(reviewsurl)
       ])
-      .then(axios.spread((autos, voorwaarden, specs, merken, aandrijvingen, gebruikers) => {
+      .then(axios.spread((autos, voorwaarden, specs, merken, aandrijvingen, gebruikers, reviews) => {
+        //indien men een review wilt schrijven bepalen van user
+        if(Vue.ls.get('naam') && Vue.ls.get('id')){
+        this.reviewauteur = Vue.ls.get('naam');
+        }
          //voorwaarden ophalen
         var voorwaardentemp = [];
         for (var i = 0; i < voorwaarden.data.length; i++) {
@@ -263,8 +297,22 @@ export default {
               if (aandrijvingtemp[0].href.match(/aandrijvingen\/(\d+)/)[1]) {
                 this.aandrijving = this.data.aandrijvingen[aandrijvingtemp[0].href.match(/aandrijvingen\/(\d+)/)[1]].naam           
               }            
-          }    
-
+          }   
+        //ophalen reviews
+        var reviewstemp = [];
+          for (var j = 0; j < reviews.data.length; j++) {
+            reviewstemp[j] = {
+              beschrijving : reviews.data[j].field_beschrijving[0].value,
+              rating: reviews.data[j].field_rating[0].value,
+                       
+            };
+            for (var m = 0; m < gebruikers.data.length; m++) {
+              if(gebruikers.data[m].uid[0].value == reviews.data[j].user_id[0].target_id){
+                reviewstemp[j].auteur = gebruikers.data[m].name[0].value;
+              }
+            }
+          };
+        this.reviews = reviewstemp;
       }))
       .catch(error => {  
         console.log(error)  
@@ -290,7 +338,7 @@ export default {
     //custom format calendar
     datepickerformat: function(date) {
       return moment(date).format('D MMMM  YYYY');
-    },
+    }
   },
   filters: {
     datumfilter: function(val){      

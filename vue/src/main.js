@@ -14,6 +14,7 @@ import '@/assets/js/main.js'
 import '@/assets/sass/main.scss'
 import vSelect from 'vue-select'
 import Datepicker from 'vuejs-datepicker'
+import StarRating from 'vue-star-rating' 
 
 Vue.config.productionTip = false
 //leafletcomponents voor maps
@@ -26,6 +27,9 @@ Vue.component('v-icondefault', Vue2Leaflet.IconDefault)
 Vue.component('v-select', vSelect)
 //vuedatepicker
 Vue.component('datepicker', Datepicker);
+//starrating
+Vue.component('star-rating', StarRating);  
+
 
 /* eslint-disable no-new */
 new Vue({

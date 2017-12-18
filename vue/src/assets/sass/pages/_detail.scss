@@ -10,6 +10,23 @@ margin-bottom: 2rem!important;
 img{
     width: 100vw;
 }
+.detail{
+    .reviewpannel{
+        border-left: 1px solid $white;
+        margin-top: 2px;
+    }
+    .reviewpannelwrite{
+        border-right: 1px solid $white;
+        margin-top: 2px;
+        text-align: right
+    }
+    .plaatsen{
+        margin-top: 5px;
+    }
+    #sterrenplaats{
+        margin: 10px 0px;
+    }
+}
 .vdp-datepicker__calendar{
 background-color: $white;
 color: $green;
@@ -59,7 +76,7 @@ color: $green;
     .card.noshadow.grey.white{
         margin-bottom: 0.5rem
     }
-    button{
+    .buttonhuur{
         border: 1px solid $white;
         font-size: 2.5rem;
         padding: 0.5rem;
