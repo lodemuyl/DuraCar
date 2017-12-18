@@ -112,7 +112,7 @@
                 <h1 class="center lemonmilk subtitle red">Reviews</h1>
                 <div v-for="review in reviews" class="columns is-multiline is-mobile reviewpannel">
                   <div class="column"> 
-                    <h2 class="alineatitle red bold">{{ review.auteur }}</h2>
+                    <h2 class="alineatitle red bold inline">{{ review.auteur }}</h2><p class="green inline floatright">{{ review.datum | datumfilter }}</p>
                     <p>{{ review.beschrijving }}</p>
                     <div id="sterren">                  
                       <star-rating v-bind:star-size="20" active-color="#FF5A5F" v-bind:rating="review.rating"></star-rating>        
@@ -304,7 +304,7 @@ export default {
             reviewstemp[j] = {
               beschrijving : reviews.data[j].field_beschrijving[0].value,
               rating: reviews.data[j].field_rating[0].value,
-                       
+              datum: reviews.data[j].created[0].value          
             };
             for (var m = 0; m < gebruikers.data.length; m++) {
               if(gebruikers.data[m].uid[0].value == reviews.data[j].user_id[0].target_id){
