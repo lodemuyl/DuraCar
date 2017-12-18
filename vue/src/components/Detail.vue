@@ -254,7 +254,7 @@ export default {
            let id= url.substring(index1 + 13, index2)
           if(gebruikers.data[m].uid[0].value == id){
             this.eigenaar.naam = gebruikers.data[m].name[0].value;
-            this.eigenaar.gsm = "0" + String(gebruikers.data[m].field_gsm_nummer[0].value);
+            this.eigenaar.gsm =  String(gebruikers.data[m].field_gsm_nummer[0].value);
           }
         };
         //aandrijving

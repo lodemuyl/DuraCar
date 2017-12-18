@@ -88,14 +88,15 @@ export default {
             nummer: autolijst.data[k].field_huisnummer[0].value
           }
         };
-        this.autolijst = autostemp;     
+        this.autolijst = autostemp;    
+
       //merken toevoegen aan de array merklijst
         var merkentemp = [];
         for (var k = 0; k < merken.data.length; k++) {
           merkentemp[merken.data[k].id[0].value] = {
             id: merken.data[k].id[0].value,
             naam: merken.data[k].name[0].value,
-            logo: merken.data[k].field_merklogo[0].url
+            logo: merken.data[k].field_logo[0].url
           }
         };
         this.merklijst = merkentemp;

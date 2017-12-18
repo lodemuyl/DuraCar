@@ -59,8 +59,6 @@ import VueLocalStorage from 'vue-ls'
 import Vue from 'vue'
 import '@/assets/js/bulma.js'
 let btoa = require('btoa');
-Vue.use(VueLocalStorage); 
-
 export default {
   name: 'login',
   data () {

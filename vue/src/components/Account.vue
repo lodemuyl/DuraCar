@@ -1,15 +1,76 @@
 <template>
   <div class="account">
-    <h1 class="pagetitle">{{ title }}</h1>
+    <h1 v-if="this.user.loggedin" class="pagetitle">{{ user.naam }}</h1>
     <div v-if="this.user.loggedin">
-      <p>{{ user.naam }}</p>
-      <p>{{ user.email }}</p>
-      <p>{{ user.gsm }}</p>
-    <form @submit.prevent="logout">
-      <div class="control">
-        <button id='logout' class="button is-link fullwidth">Logout</button>
+      <div class="columns is-mobile">
+        <div class="column is-10 is-offset-1">
+          <div  v-if="errors.length !== 0" class="notification is-danger">
+            <p v-for="error in errors">{{ error }}</p>
+            <p>Probeer opnieuw of neem contact op met de administrator</p>
+          </div>
+        </div>
       </div>
-    </form>
+        <div class="card noshadow grey white">
+          <div class="card-content">
+            <div class="content">
+                <div class="columns is-mobile">
+                  <div class="column customcolumn">
+                    <h2 class="alineatitle bold red">Email</h2>
+                    <p><span class="bold"> {{ user.email }} </span><a @click="modaltoggle(user.email)"><i class="fa fa-pencil fa-lg showModal red" aria-hidden="true"></i></a></p>
+                  </div>
+                </div>
+                <div class="columns is-mobile">
+                  <div class="column customcolumn">
+                    <h2 class="alineatitle bold red">Gebruikersnaam</h2>
+                    <p><span class="bold"> {{ user.naam }} </span><a @click="modaltoggle(user.naam)"><i class="fa fa-pencil fa-lg showModal red" aria-hidden="true"></i></a></p>
+                  </div>
+                </div> 
+                <div class="columns is-mobile">
+                  <div class="column customcolumn">
+                    <h2 class="alineatitle bold red">Gsm</h2>
+                    <p><span class="bold">{{ user.gsm }} </span><a @click="modaltoggle(user.gsm)"><i class="fa fa-pencil fa-lg showModal red" aria-hidden="true"></i></a></p>
+                  </div>
+                </div> 
+                <div class="columns is-mobile">
+                  <div class="column customcolumn">
+                    <h2 class="alineatitle bold red">Afbeelding</h2>
+                    <div class="frontpageimages nomargin">
+                      <img src="../assets/images/account.png">
+                    </div>
+                  </div>
+                </div> 
+            </div>
+          </div> 
+        </div>  
+
+        <div  class="modal" v-bind:class="{ 'is-active': modal }">
+          <div class="modal-background"></div>
+          <div class="modal-card">
+            <header class="modal-card-head fullwidth">
+              <p class="modal-card-title lemonmilk">Wijzigen</p>
+              <button  @click="modaltoggle()" class="delete" aria-label="close"></button>
+            </header>
+            <section class="modal-card-body">
+              <input class="input" v-model="updateval" v-bind:placeholder="placeholder"></inpu>
+            </section>
+            <footer class="modal-card-foot">
+              <a class="button is-success" @click="wijzigen()">Wijzigen</a>
+              <a class="button" @click="modaltoggle()" >Annuleren</a>
+            </footer>
+          </div>
+        </div>
+
+        <div class="card noshadow nominheight">
+          <div class="card-content"> 
+            <router-link to="Account/mijnautos" class="button is-link fullwidth">Mijn auto's</router-link>
+            <router-link to="Account/Gehuurdeautos" class="button is-link fullwidth">Gehuurde auto's</router-link>
+            <form @submit.prevent="logout">
+              <div class="control">
+                <button id='logout' class="button is-link fullwidth">Logout</button>
+              </div>
+            </form>
+          </div>
+        </div>
     </div>
     <div v-else>
       <p>Je bent niet ingelogd</p>
@@ -32,6 +93,10 @@ export default {
   data () {
     return {
       title: 'account',
+      modal: false,
+      active: null,
+      updateval: null,
+      placeholder: null,
       user: {
         naam: null,
         email: null,
@@ -71,8 +136,64 @@ export default {
             this.user.gsm =  data.data.field_gsm_nummer[0].value        
           })
     },
-    logout () {
-       axios.post('http://localhost/duracar/user/logout?_format=hal+json',
+    modaltoggle: function(param) {
+      if(param){
+        if(param === this.user.naam){
+          this.active = "naam"
+        }else if(param === this.user.email){
+          this.active = "email"
+        }else if(param === this.user.gsm){
+          this.active = "gsm"
+        }
+        this.placeholder = param
+      }else if(!param){ 
+        this.active = null       
+      }
+      this.updateval = null;
+      this.modal = ! this.modal;
+    },
+    wijzigen: function() {
+      var hash = Vue.ls.get('auth');
+      var unhash = String(window.atob(hash));
+      var index = unhash.indexOf(":");
+      var user = unhash.substring(0, unhash.indexOf(":"));
+      var ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght)
+      this.errors = []
+      var raw = {};
+      if(this.active === "naam"){
+        raw['name'] = [{"value": this.updateval}]
+      }else if(this.active === "email"){
+        raw['mail'] = [{"value": this.updateval}]
+      }else if(this.active === "gsm") {
+        raw['field_gsm_nummer'] = [{"value": this.updateval}]
+      }
+      let url =  'http://localhost/duracar/user/'+ Vue.ls.get('id') +'?_format=hal_json'
+      axios.patch(url, raw,
+      {
+          auth: {
+              username: user,
+              password: ww
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+      }
+      )
+      .then((data) => {
+        Vue.ls.set('naam', data.data.name[0].value, 60 * 60 * 3000);
+        Vue.ls.set('auth',  btoa(data.data.name[0].value + ':' + ww), 60 * 60 * 3000);
+        Vue.ls.set('gsm', data.data.field_gsm_nummer[0].value, 60 * 60 * 3000);
+        this.errorsoncreate = []
+        this.getinfo()        
+      })
+      .catch( e => {
+          this.errors.push(e.response.statusText)
+      });
+      this.modaltoggle();
+    },
+    logout: function () {
+       axios.post('http://localhost/duracar/user/logout',
       {
         headers: {
           'accept': 'application/hal+json',
@@ -92,11 +213,10 @@ export default {
             Vue.ls.remove('naam');
             Vue.ls.remove('uuid'); 
             Vue.ls.remove('auth'); 
-
       })
       .catch( e => {        
               if(e.response.status == 403){
-                this.errors.push("Je bent reeds uitgelogd")
+                this.errors.push("Geen toegang" + e.response.statusText)
               }else{
                 this.errors.push(e.response.statusText)
               }            

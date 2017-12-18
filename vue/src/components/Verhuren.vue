@@ -360,10 +360,10 @@ export default {
         {
           "user_id": [
               {
-                  "target_id": 21,
+                  "target_id": Vue.ls.get('id') ,
                   "target_type": "user",
-                  "target_uuid": "4035d258-e089-400a-ae47-97455980acde",
-                  "url": "/duracar/user/21"
+                  "target_uuid": Vue.ls.get('uuid'),
+                  "url": "/duracar/user/" + Vue.ls.get('id')
               }
           ],
           "name": [
@@ -384,7 +384,7 @@ export default {
                   "value": this.auto.deuren,
               }
           ],
-          "field_b": [
+          "field_bouwjaar": [
               {
                   "value": this.auto.bouwjaar
               }
@@ -569,7 +569,7 @@ export default {
       axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
         params: {
           address: nummer  + '+' + straat + '+' + gemeente,
-          KEY: 'AIzaSyCgHQkXEYFc7pv8sKk3QCWNHj6Nrn9d1BY'
+          KEY: 'AIzaSyBrk4BA1AwfLjtD0p016hjmyWNwsZOIe40'
         }
       })
       .then((locaties) => {
@@ -581,6 +581,7 @@ export default {
         }
         if(locaties.data.status == "OVER_QUERY_LIMIT"){
           this.errorsoncreate.push("Probleem bij het ophalen van jouw locatie probeer opnieuw")
+          this.formSubmitted = false
         }
       })
       .catch((e) => {

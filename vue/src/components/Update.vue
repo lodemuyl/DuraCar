@@ -16,7 +16,9 @@
 </template>
 <script>
 /* eslint-disable */
-import axios from 'axios'            
+import axios from 'axios'
+import VueLocalStorage from 'vue-ls'
+import Vue from 'vue'         
 export default {
   name: 'update',
   data () {
@@ -27,7 +29,9 @@ export default {
     }
   },
   created () {
-
+    if(!Vue.ls.get('id')){
+       this.$router.push('/Account/login')
+    }
   },
   methods: {
 
