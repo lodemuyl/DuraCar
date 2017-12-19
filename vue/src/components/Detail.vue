@@ -8,7 +8,7 @@
         </div>
       </div>
     </div>
-    <div v-if="errors.length == 0" class="card noshadow">
+    <div class="card noshadow">
         <div v-if="afbeeldingen.picture1 || afbeeldingen.picture2 || afbeeldingen.picture3" class="card-content nopadding noshadow relative">
           <div v-if="Object.keys(this.afbeeldingen).length > 1" class="absolute fullwidth fullheight">
             <a @click="vorige" class="inlineblock fullheight relative"><i class="fa fa-chevron-left fa-5x imagecontrol block absolute" aria-hidden="true"></i></a><a class="inlineblock floatright fullheight relative" @click="volgende"><i class="fa fa-chevron-right fa-5x imagecontrol block absolute next" aria-hidden="true"></i></a>
@@ -105,11 +105,11 @@
                     </div>   
                     <div class="columns is-multiline is-mobile">
                       <div class=" column customcolumn">                     
-                        <button class="buttonhuur fullwidth">Huur mij nu!</button>
+                        <button @click="huren" class="buttonhuur fullwidth">Huur mij nu!</button>
                       </div>
                     </div>
               <div class="reviews">
-                <h1 class="center lemonmilk subtitle red">Reviews</h1>
+                <h1 v-if="reviews.length > 0" class="center lemonmilk subtitle red">Reviews</h1>
                 <div v-for="review in reviews" class="columns is-multiline is-mobile reviewpannel">
                   <div class="column"> 
                     <h2 class="alineatitle red bold inline">{{ review.auteur }}</h2><p class="green inline floatright">{{ review.datum | datumfilter }}</p>
@@ -126,7 +126,7 @@
                     <div id="sterrenplaats">                  
                       <star-rating v-bind:star-size="20" active-color="#FF5A5F" v-model="score"></star-rating>        
                     </div>
-                     <button class="button is-link fullwidth plaatsen">Plaats</button>
+                     <button @click="reviewplaatsen()" class="button is-link fullwidth plaatsen">Plaats</button>
                   </div>
                  
                 </div>
@@ -338,6 +338,73 @@ export default {
     //custom format calendar
     datepickerformat: function(date) {
       return moment(date).format('D MMMM  YYYY');
+    },
+    reviewplaatsen: function(){
+      let id = Vue.ls.get('id');
+      let uuid = Vue.ls.get('uuid')
+      let hash = Vue.ls.get('auth');
+      let unhash = String(window.atob(hash));
+      let index = unhash.indexOf(":");
+      let user = unhash.substring(0, unhash.indexOf(":"));
+      let ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght);
+      axios.post(' http://localhost/duracar/entity/reviews', 
+        {      
+          "user_id": [
+             {
+                 "target_id": id,
+                 "target_type": "user",
+                 "target_uuid": uuid,
+                 "url": "/duracar/user/" +id
+             }
+          ],
+          "field_beschrijving": [
+            {
+                     "value": this.review
+                 }
+             ],
+             "field_carid": [
+                 {
+                     "value": this.id
+                 }
+             ],
+             "field_rating": [
+                 {
+                     "value": this.score
+                 }
+            ]
+          
+        },
+        {
+          auth: {
+              username: user,
+              password: ww
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
+        }
+      )
+      .then(() => {
+        this.errors = []
+        this.autosget();
+        this.score = 4;
+        this.review = "";
+
+      })
+      .catch( e => {
+        console.log(e)
+          this.errors.push(e.response.statusText)
+      });
+    },
+    huren: function() {
+      if(this.hurenvan && this.hurentot){
+        this.errors = [];
+              console.log('verhuurd');
+      }else {
+        this.errors = [];
+        this.errors.push("je moet de begin en einddatum ingeven wanneer je de auto wilt huren")
+      }
     }
   },
   filters: {

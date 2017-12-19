@@ -99,13 +99,22 @@ export default {
       }
       this.modal = ! this.modal;
     },
-    verwijderen: function(id){
-      if (id) {
-        var url = `http://localhost/duracar/autos/autos/` + id;
-        axios.delete(url)
+    verwijderen: function(id){ 
+      if (id) {      
+        let hash = Vue.ls.get('auth');
+        let unhash = String(window.atob(hash));
+        let index = unhash.indexOf(":");
+        let user = unhash.substring(0, unhash.indexOf(":"));
+        let ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght);
+        let url = `http://localhost/duracar/autos/autos/` + this.click[0].id;
+        axios.delete(url,{
+          auth: {
+            username: user,
+            password: ww
+          }
+        })
         .then(() => {
-          console.log('verwijderd');
-          window.location.reload();
+          this.autofilter()
         })
         .catch(error => {
           this.errors.push('fout bij verwijderen: ' + error.message)

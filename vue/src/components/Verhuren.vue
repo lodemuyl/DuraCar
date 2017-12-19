@@ -356,14 +356,21 @@ export default {
     },
     //aanmaken van nieuwe data in entity autos
     postauto: function () {
-      axios.post('http://localhost/duracar/entity/autos?_format=json', 
+      let id = Vue.ls.get('id');
+      let uuid = Vue.ls.get('uuid')
+      let hash = Vue.ls.get('auth');
+      let unhash = String(window.atob(hash));
+      let index = unhash.indexOf(":");
+      let user = unhash.substring(0, unhash.indexOf(":"));
+      let ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght)
+      axios.post('http://localhost/duracar/entity/autos', 
         {
           "user_id": [
               {
-                  "target_id": Vue.ls.get('id') ,
+                  "target_id": id,
                   "target_type": "user",
-                  "target_uuid": Vue.ls.get('uuid'),
-                  "url": "/duracar/user/" + Vue.ls.get('id')
+                  "target_uuid": uuid,
+                  "url": "/duracar/user/" + id
               }
           ],
           "name": [
@@ -447,7 +454,14 @@ export default {
           ]
         },
         {
-          'Content-Type': 'application/json'
+          auth: {
+              username: user,
+              password: ww
+          },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          }
         }
       )
       .then(() => {

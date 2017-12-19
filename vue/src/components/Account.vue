@@ -73,7 +73,7 @@
         </div>
     </div>
     <div v-else>
-      <p>Je bent niet ingelogd</p>
+      <p class="center">Je bent niet ingelogd</p>
     </div>
   </div>
 </template>
@@ -163,11 +163,13 @@ export default {
       if(this.active === "naam"){
         raw['name'] = [{"value": this.updateval}]
       }else if(this.active === "email"){
-        raw['mail'] = [{"value": this.updateval}]
+        raw['mail'] = [{"value": this.updateval}];
+        raw['pass'] = [{"existing": ww}]
       }else if(this.active === "gsm") {
         raw['field_gsm_nummer'] = [{"value": this.updateval}]
       }
       let url =  'http://localhost/duracar/user/'+ Vue.ls.get('id') +'?_format=hal_json'
+      console.log(raw);
       axios.patch(url, raw,
       {
           auth: {
@@ -189,23 +191,12 @@ export default {
       })
       .catch( e => {
           this.errors.push(e.response.statusText)
+          console.log(e.response)
       });
       this.modaltoggle();
     },
     logout: function () {
-       axios.post('http://localhost/duracar/user/logout',
-      {
-        headers: {
-          'accept': 'application/hal+json',
-          'content-type': 'application/hal+json'            
-        },
-        body: {
-          csrf_token: Vue.ls.get('csrftoken'),
-          logout_token: Vue.ls.get('logout-token')
-        }
-      })
-      .then( fresponse => {
-            this.$parent.ingelogd = false;
+       this.$parent.ingelogd = false;
             this.user.loggedin= false;
             Vue.ls.remove('csrftoken');
             Vue.ls.remove('id');
@@ -213,14 +204,8 @@ export default {
             Vue.ls.remove('naam');
             Vue.ls.remove('uuid'); 
             Vue.ls.remove('auth'); 
-      })
-      .catch( e => {        
-              if(e.response.status == 403){
-                this.errors.push("Geen toegang" + e.response.statusText)
-              }else{
-                this.errors.push(e.response.statusText)
-              }            
-      });
+            window.location.reload();
+
     },
   }
 }
