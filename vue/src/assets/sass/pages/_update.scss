@@ -1,0 +1,21 @@
+.update{
+    .dropdown-menu{
+        display: block;
+    }
+    .searchable{
+        width: 100%;
+    }
+    .summation{
+        ul {
+            list-style: none;
+            padding:0;
+            margin:0;
+        }
+        li:before{
+            content: "\f10c";
+            font-family: FontAwesome;
+            color: $red; 
+            margin-right: 4px;       
+        }
+    }
+}
