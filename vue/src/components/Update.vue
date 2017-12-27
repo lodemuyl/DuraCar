@@ -119,42 +119,57 @@
               <button  @click="modaltoggle()" class="delete" aria-label="close"></button>
             </header>  
             <section v-show="active==='merk'" class="modal-card-body fullheight">            
-                <v-select  v-model="updateval" :searchable="true"  class="fullwidth" label="naam" :options="data.merken"></v-select>
+                <h2 class="lemonmilk">Merk</h2>
+                <v-select v-model="updateval" :searchable="true"  class="fullwidth" label="naam" :options="data.merken"></v-select>
             </section>
             <section v-show="active==='aandrijving'" class="modal-card-body fullheight">            
+                <h2 class="lemonmilk">Aandrijving</h2>
                 <v-select v-model="updateval"  :searchable="true"  class="fullwidth" label="naam" :options="data.aandrijvingen"></v-select>
             </section>
             <section v-show="active==='beschikbaar'" class="modal-card-body fullheight">
-              <label class="label">Beschikbaar van</label>
-              <datepicker language="nl" v-model="updatedate.van" :format="datepickerformat" :disabled="disabled"></datepicker>                            
-              <label class="label">Beschikbaar tot</label>
-              <datepicker language="nl" v-model="updatedate.tot" :format="datepickerformat" :disabled="disabled"></datepicker>                            
+              <h2 class="lemonmilk">Beschikbaar van</h2>
+              <datepicker language="nl" v-model="updateval" :format="datepickerformat" :disabled="disabled"></datepicker>                            
+              <h2 class="lemonmilk">Beschikbaar tot</h2>
+              <datepicker language="nl" v-model="updatedate" :format="datepickerformat" :disabled="disabled"></datepicker>                            
             </section>
             <section v-show="active==='model'" class="modal-card-body">
+              <h2 class="lemonmilk">Model</h2>
               <input class="input" v-model="updateval" v-bind:placeholder="placeholder"></input>
             </section>
             <section v-show="active==='bouwjaar'" class="modal-card-body">
+              <h2 class="lemonmilk">Bouwjaar</h2>
               <input class="input" v-model="updateval" v-bind:placeholder="placeholder"></input>
             </section>
             <section v-show="active==='prijs'" class="modal-card-body">
+              <h2 class="lemonmilk">Prijs</h2>
               <input class="input" v-model="updateval" v-bind:placeholder="placeholder"></input>
             </section>
             <section v-show="active==='nummerplaat'" class="modal-card-body">
+              <h2 class="lemonmilk">Nummerplaat</h2>
               <input class="input" v-model="updateval" v-bind:placeholder="placeholder"></input>
             </section>
             <section v-show="active==='zitplaatsen'" class="modal-card-body fullheight">
+              <h2 class="lemonmilk">Zitplaatsen</h2>
               <v-select v-model="updateval"  :searchable="true"  class="fullwidth" label="naam" :options="data.zitplaatsen"></v-select>
             </section>
             <section v-show="active==='deuren'" class="modal-card-body fullheight">
+              <h2 class="lemonmilk">Deuren</h2>
               <v-select v-model="updateval"  :searchable="true"  class="fullwidth" label="naam" :options="data.deuren"></v-select>
             </section>
             <section v-show="active==='locatie'" class="modal-card-body">
-              <input class="input"  v-model="updateval" v-bind:placeholder="placeholder + ' ' + autodata.locatie.nummer + ' ' + autodata.locatie.gemeente"></input>
+              <h2 class="lemonmilk">Straat</h2>
+              <input class="input"  v-model="updateval" v-bind:placeholder="autodata.locatie.straat"></input>
+              <h2 class="lemonmilk">Nummer</h2>
+              <input class="input"  v-model="updatevalhnr" v-bind:placeholder="autodata.locatie.nummer"></input>
+              <h2 class="lemonmilk">Gemeente</h2>
+              <input class="input"  v-model="updatevalgmnte" v-bind:placeholder="autodata.locatie.gemeente"></input>
             </section>
             <section v-show="active==='voorwaarden'" class="modal-card-body fullheight">            
+                <h2 class="lemonmilk">Voorwaarden</h2>
                 <v-select v-model="updateval" multiple :searchable="true" label="naam" :options="data.voorwaarden"></v-select>
             </section>
             <section v-show="active==='specificaties'" class="modal-card-body fullheight">            
+                <h2 class="lemonmilk">Specificaties</h2>
                 <v-select v-model="updateval" multiple :searchable="true" label="naam" :options="data.specs"></v-select>
             </section>
             <footer class="modal-card-foot">
@@ -193,13 +208,12 @@ export default {
       id: this.$route.params.id,
       modal: false,
       updateval: null,
+      updatevalhnr: null,
+      updatevalgmnte: null,
       disabled: {
          to: null
       },
-      updatedate: {
-        van: null,
-        tot: null,
-      },
+      updatedate: null,
       active: null,
       placeholder: null,
       data: {
@@ -402,24 +416,32 @@ export default {
       if(param){
         if(param === this.autodata.merk){
           this.active = "merk"
+          this.updateval = this.autodata.merk;
         }else if(param === this.autodata.title){
           this.active = "model"
         }else if(param === this.autodata.beschikbaarvan){
           this.active = "beschikbaar"
+          this.updateval = this.autodata.beschikbaarvan;
+          this.updatedate = this.autodata.beschikbaartot;
         }else if(param === this.autodata.prijs){
           this.active = "prijs"
         }else if(param === this.autodata.locatie.straat){
           this.active = "locatie"
         }else if(param === "voorwaarden"){
           this.active = "voorwaarden"
+          this.updateval = this.autodata.voorwaarden
         }else if(param === "specs"){
           this.active = "specificaties"
+          this.updateval = this.autodata.specs
         }else if(param === this.autodata.zitplaatsen){
           this.active = "zitplaatsen"
+          this.updateval = this.autodata.zitplaatsen;
         }else if(param === this.autodata.deuren){
           this.active = "deuren"
+          this.updateval = this.autodata.deuren;
         }else if(param === this.autodata.aandrijving){
           this.active = "aandrijving"
+          this.updateval = this.autodata.aandrijving;
         }else if(param === this.autodata.nummerplaat){
           this.active = "nummerplaat"
         }else if(param === this.autodata.bouwjaar){
@@ -427,11 +449,11 @@ export default {
         }
         this.placeholder = param
       }else if(!param){ 
-        this.active = null       
+        this.active = null      
+        this.updateval = null;
+        this.updatedate.tot = null;
+        this.updatedate.van = null; 
       }
-      this.updateval = null;
-      this.updatedate.tot = null;
-      this.updatedate.van = null;
       this.modal = ! this.modal;
     },
     //custom format calendar
@@ -450,23 +472,15 @@ export default {
         var ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght)      
         switch(param) {
             case "merk":
-              text["http://localhost/duracar/rest/relation/autos/autos/field_merk"] = [
+              text["field_merk"] = [
                   {
-                      "_links": {
-                          "self": {
-                              "href": "http://localhost/duracar/merken/merken/"+ val.id +"?_format=hal_json"
-                          },
-                          "type": {
-                              "href": "http://localhost/duracar/rest/type/merken/merken"
-                          }
-                      },
-                      "uuid": [
-                          {
-                              "value": val.uuid
-                          }
-                      ]
+                "target_id": value.id,
+                "target_type": "merken",
+                "target_uuid": value.uuid,
+                "url": "/duracar/merken/merken/" + value.id                     
                   }
               ]
+              console.log(text)
             break;
             case "aandrijving":
               text["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"] = [
@@ -506,14 +520,19 @@ export default {
               text['field_aantal_deuren'] = [{"value": value}];
             break;
             case "beschikbaar":
-              text['field_beschikbaarvan'] = [{"value": this.filteryear(this.update.van)}];
-              text['field_beschikbaartot'] = [{"value": this.filteryear(this.update.tot)}];
+              text['field_beschikbaarvan'] = [{"value": this.filteryear(this.updateval)}];
+              text['field_beschikbaartot'] = [{"value": this.filteryear(this.updatedate)}];
             break; 
             case "bouwjaar":
               text['field_bouwjaar'] = [{"value": value}];
             break; 
             case "locatie":
-              console.log('locatie aa')
+              let straat = value ;
+              let huisnummer = this.updatevalhnr;
+              let gemeente =  this.updatevalgmnte
+              text['field_gemeente'] = [{"value": gemeente}];
+              text['field_huisnummer'] = [{"value": huisnummer}];
+              text['field_straat'] = [{"value": value}];
             break;
             case "voorwaarden":
               let vrwarray = [];
@@ -526,7 +545,7 @@ export default {
                 str["url"] = "/duracar/voorwaarden/voorwaarden/" + val[l].id;
                 vrwarray.push(str)
               }
-              text = vrwarray;
+              text['field_voorwaarden'] = vrwarray;
             break;
             case "specificaties":
               let spcarray = [];
@@ -539,7 +558,7 @@ export default {
                 str["url"] = "/duracar/specificaties/specificaties/" + val[g].id;
                 spcarray.push(str)
               }
-              text = spcarray;
+              text['field_specificaties'] = spcarray;
             break;
             default:
         };
@@ -570,6 +589,8 @@ export default {
       //console.log(text)
       this.active = null;
       this.updateval = null;
+      this.updatevalgmnte = null;
+      this.updatevalhnr = null;
       this.modaltoggle();
     },
   //custom format calendar
@@ -578,9 +599,18 @@ export default {
     },
   //filteren van specifieke datum uit beschikbaarheid van calender
     filteryear: function(param) {
-      var vandaag = param;
-      var maand = param.getMonth() + 1;
-      let date = String(vandaag.getFullYear() + "-" + maand +"-"+ vandaag.getDate())
+      let vandaag = param;
+      let maand = vandaag.getMonth() + 1;
+      let dag = vandaag.getMonth();
+      //de maand moet 2 digits bevatten
+      function tweedigits(number, targetLength) {
+          var output = number + '';
+          while (output.length < targetLength) {
+              output = '0' + output;
+          }
+          return output;
+      }
+      let date = String(vandaag.getFullYear() + "-" + tweedigits(maand, 2) +"-"+ tweedigits(dag, 2))
       return date
     },
   },

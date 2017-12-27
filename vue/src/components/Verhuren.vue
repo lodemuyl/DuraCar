@@ -470,6 +470,7 @@ export default {
       })
       .catch( e => {
         console.log(e)
+        console.log(e)
           this.errorsoncreate.push(e.response.statusText)
       });
     },
@@ -570,9 +571,18 @@ export default {
     },
     //filteren van specifieke datum uit beschikbaarheid van calender
     filteryear: function(param) {
-      var vandaag = param;
-      var maand = param.getMonth() + 1;
-      let date = String(vandaag.getFullYear() + "-" + maand +"-"+ vandaag.getDate())
+      let vandaag = param;
+      let maand = param.getMonth() + 1;
+      let dag = vandaag.getDate();
+      //de maand moet 2 digits bevatten
+      function twodigits(number, targetLength) {
+          var output = number + '';
+          while (output.length < targetLength) {
+              output = '0' + output;
+          }
+          return output;
+      }
+      let date = String(vandaag.getFullYear() + "-" + twodigits(maand, 2) +"-"+ twodigits(dag, 2))
       return date
     },
     //bepalen lat en long van adres + aanroepen postauto
