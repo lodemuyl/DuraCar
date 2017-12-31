@@ -272,10 +272,10 @@ import axios from 'axios'
 import moment from 'moment'
 Vue.use(VueLocalStorage); 
 const msg = require('vee-validate/dist/locale/nl');
-//csrf
-const csrf = 'O8yxvddF9BuloMC9Cr_xdSdjN40bgTDiLBT5qiKuJrM';
 //aanvulling ip veevalidate voor daterange te kunnen bepalen
 window.moment = moment;
+//google geolocation api key
+const geokey = 'AIzaSyCaDosh7dDXsuXn1E_GXXTLP6cvytiH-HE';
 // nederlandse validatieberichten
 Vue.use(VeeValidate, {
   locale: 'nl',
@@ -593,7 +593,7 @@ export default {
       axios.get(`https://maps.googleapis.com/maps/api/geocode/json`,{
         params: {
           address: nummer  + '+' + straat + '+' + gemeente,
-          KEY: 'AIzaSyBrk4BA1AwfLjtD0p016hjmyWNwsZOIe40'
+          KEY: geokey
         }
       })
       .then((locaties) => {

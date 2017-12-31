@@ -451,8 +451,6 @@ export default {
       }else if(!param){ 
         this.active = null      
         this.updateval = null;
-        this.updatedate.tot = null;
-        this.updatedate.van = null; 
       }
       this.modal = ! this.modal;
     },
@@ -483,21 +481,12 @@ export default {
               console.log(text)
             break;
             case "aandrijving":
-              text["http://localhost/duracar/rest/relation/autos/autos/field_aandrijving"] = [
+              text["field_aandrijving"] = [
                   {
-                      "_links": {
-                          "self": {
-                              "href": "http://localhost/duracar/aandrijvingen/aandrijvingen/"+ val.id +"?_format=hal_json"
-                          },
-                          "type": {
-                              "href": "http://localhost/duracar/rest/type/aandrijvingen/aandrijvingen"
-                          }
-                      },
-                      "uuid": [
-                          {
-                              "value": val.uuid
-                          }
-                      ]
+                      "target_id": val.id,
+                      "target_type": "aandrijvingen",
+                      "target_uuid": val.uuid,
+                      "url": "/duracar/aandrijvingen/aandrijvingen/" + val.id
                   }
               ]
             break;
@@ -601,7 +590,7 @@ export default {
     filteryear: function(param) {
       let vandaag = param;
       let maand = vandaag.getMonth() + 1;
-      let dag = vandaag.getMonth();
+      let dag = vandaag.getDate();
       //de maand moet 2 digits bevatten
       function tweedigits(number, targetLength) {
           var output = number + '';

@@ -35,7 +35,8 @@
                   <div class="column customcolumn">
                     <h2 class="alineatitle bold red">Afbeelding</h2>
                     <div class="frontpageimages nomargin">
-                      <img src="../assets/images/account.png">
+                      <img v-show="thumbnail" :src="thumbnail">
+                      <img v-show="!thumbnail" src="../assets/images/account.png">
                     </div>
                   </div>
                 </div> 
@@ -77,15 +78,17 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import axios from 'axios'
 import VueLocalStorage from 'vue-ls'
 import Vue from 'vue'
 import Router from 'vue-router'
+//encrypten en decrypten van auth gegevens
 let btoa = require('btoa');
+//toevoegen van routes voor het refreshen indien je niet ingelogd bent
 let router = new Router();
+//vue local storage voor ophalen en wegschrijven van usergegevens
 Vue.use(VueLocalStorage); 
 Vue.use(Router)
 export default {
@@ -97,6 +100,7 @@ export default {
       active: null,
       updateval: null,
       placeholder: null,
+      thumbnail: null,
       user: {
         naam: null,
         email: null,
@@ -107,6 +111,7 @@ export default {
     }
   },
   created () {
+    //logincheck
     if(Vue.ls.get('id')){      
       this.user.loggedin = true
       this.getinfo();
@@ -116,14 +121,15 @@ export default {
     }
   },
   methods: {
+    //ophalen user gegevens
     getinfo: function(){
           let id = Vue.ls.get('id');
-          var url = 'http://localhost/duracar/user/'+id+'?_format=hal_json';
-          var hash = Vue.ls.get('auth');
-          var unhash = String(window.atob(hash));
-          var index = unhash.indexOf(":");
-          var naam = unhash.substring(0, unhash.indexOf(":"));
-          var ww = unhash.substring(unhash.indexOf(':') + 1, unhash.length)
+          let url = 'http://localhost/duracar/user/'+id+'?_format=hal_json';
+          let hash = Vue.ls.get('auth');
+          let unhash = String(window.atob(hash));
+          let index = unhash.indexOf(":");
+          let naam = unhash.substring(0, unhash.indexOf(":"));
+          let ww = unhash.substring(unhash.indexOf(':') + 1, unhash.length)
           axios.get(url,{
             auth: {
               username: naam,
@@ -131,11 +137,18 @@ export default {
             }
           })
           .then((data) => {  
-            this.user.naam = data.data.name[0].value ;
-            this.user.email = data.data.mail[0].value ;
-            this.user.gsm =  data.data.field_gsm_nummer[0].value        
+            let thumb = data.data._links["http://localhost/duracar/rest/relation/user/user/user_picture"];
+            this.user.naam = data.data.name[0].value;
+            this.user.email = data.data.mail[0].value;
+            if(thumb){
+              this.thumbnail = thumb[0].href;
+            }
+            if(data.data.field_gsm_nummer){
+              this.user.gsm = data.data.field_gsm_nummer[0].value 
+            }                   
           })
     },
+    //modaltoggle voor wijzigen van gegevens
     modaltoggle: function(param) {
       if(param){
         if(param === this.user.naam){
@@ -152,14 +165,16 @@ export default {
       this.updateval = null;
       this.modal = ! this.modal;
     },
+    //wijzigen van gegevens
     wijzigen: function() {
-      var hash = Vue.ls.get('auth');
-      var unhash = String(window.atob(hash));
-      var index = unhash.indexOf(":");
-      var user = unhash.substring(0, unhash.indexOf(":"));
-      var ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght)
+      let hash = Vue.ls.get('auth');
+      let unhash = String(window.atob(hash));
+      let index = unhash.indexOf(":");
+      let user = unhash.substring(0, unhash.indexOf(":"));
+      let ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght)
       this.errors = []
-      var raw = {};
+      let raw = {};
+      let url =  'http://localhost/duracar/user/'+ Vue.ls.get('id') +'?_format=hal_json'
       if(this.active === "naam"){
         raw['name'] = [{"value": this.updateval}]
       }else if(this.active === "email"){
@@ -167,9 +182,7 @@ export default {
         raw['pass'] = [{"existing": ww}]
       }else if(this.active === "gsm") {
         raw['field_gsm_nummer'] = [{"value": this.updateval}]
-      }
-      let url =  'http://localhost/duracar/user/'+ Vue.ls.get('id') +'?_format=hal_json'
-      console.log(raw);
+      }      
       axios.patch(url, raw,
       {
           auth: {
@@ -191,10 +204,10 @@ export default {
       })
       .catch( e => {
           this.errors.push(e.response.statusText)
-          console.log(e.response)
       });
       this.modaltoggle();
     },
+    //uitloggen
     logout: function () {
        this.$parent.ingelogd = false;
             this.user.loggedin= false;

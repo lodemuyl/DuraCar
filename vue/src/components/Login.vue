@@ -88,8 +88,6 @@ export default {
       "name": this.naam,
       "pass": this.wachtwoord
       }).then( fresponse => {
-        console.log(fresponse.data);
-        console.log(fresponse.data.field_gsm_nummer)
               //token opslaan in local storage
               Vue.ls.set('csrftoken', fresponse.data.csrf_token, 60 * 60 * 3000); //3 uur geldig
               Vue.ls.set('id', fresponse.data.current_user.uid, 60 * 60 * 3000);
