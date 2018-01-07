@@ -1,0 +1,14 @@
+.gehuurdeautos{
+    .info{
+        margin-left: 15px
+    }
+    .item{
+        margin-left: 40px
+    }
+    li:before{
+        content: "\f10c";
+        font-family: FontAwesome;
+        color: $white; 
+        margin-right: 4px;       
+    }
+}

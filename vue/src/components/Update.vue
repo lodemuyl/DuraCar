@@ -3,7 +3,7 @@
     <h1 class="pagetitle">{{ autodata.title }} wijzigen</h1>
  
     <div v-if="errors.length == 0" class="column is-10 is-offset-1" >
-      <div v-if="acces">        
+      <div v-if="acces">   
 
         <div class="card noshadow">
             <div class="card noshadow grey white">
@@ -187,11 +187,12 @@ import VueLocalStorage from 'vue-ls'
 import Vue from 'vue' 
 import VeeValidate from 'vee-validate'
 import moment from 'moment'
-//aanvulling ip veevalidate voor daterange te kunnen bepalen
+//aanvulling op veevalidate voor daterange te kunnen bepalen
 window.moment = moment;
 Vue.use(VueLocalStorage); 
-const msg = require('vee-validate/dist/locale/nl');
 // nederlandse validatieberichten
+const msg = require('vee-validate/dist/locale/nl');
+// configuratie veevalidate
 Vue.use(VeeValidate, {
   locale: 'nl',
   dictionary: {
@@ -256,7 +257,7 @@ export default {
     }
   },
   watch: {
-    // whenever question changes, this function will run
+    //wanneer de access niet meer true is ben je niet meer ingelogd en moet je opnieuw inloggen
     acces: function (acces) {
       if(this.acces){
         this.getdata();
@@ -267,6 +268,7 @@ export default {
     }
   },
   created () {
+    //logincheck
     if(!Vue.ls.get('id')){
        this.$router.push('/Account/login')
     };
@@ -296,6 +298,7 @@ export default {
         this.errors.push(error.message)        
       })  
     },
+    //ophalen van initiel data voor update
     getdata: function() {
       let url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json';     
       axios.all([
@@ -458,6 +461,7 @@ export default {
     datepickerformat: function(date) {
       return moment(date).format('D MMMM  YYYY');
     },
+    //postmethod voor update
     update: function(param, val){
       let value = val;
       let text = {};
@@ -582,11 +586,7 @@ export default {
       this.updatevalhnr = null;
       this.modaltoggle();
     },
-  //custom format calendar
-    datepickerformat: function(date) {
-      return moment(date).format('D MMMM  YYYY');
-    },
-  //filteren van specifieke datum uit beschikbaarheid van calender
+    //filteren van specifieke datum uit beschikbaarheid van calender
     filteryear: function(param) {
       let vandaag = param;
       let maand = vandaag.getMonth() + 1;
@@ -607,7 +607,7 @@ export default {
     datumfilter: function(val){      
     if (!val) return ''
     return moment(String(val)).format('MM/DD/YYYY')
-  }
+    }
   }
 }
 </script>

@@ -262,7 +262,6 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import Vue from 'vue'
@@ -270,13 +269,15 @@ import VeeValidate from 'vee-validate'
 import VueLocalStorage from 'vue-ls'
 import axios from 'axios'
 import moment from 'moment'
+//Gebruik van localstoragecomponent van vue
 Vue.use(VueLocalStorage); 
+//Nederlandstalige faulthandling
 const msg = require('vee-validate/dist/locale/nl');
-//aanvulling ip veevalidate voor daterange te kunnen bepalen
+//aanvulling op veevalidate voor daterange te kunnen bepalen
 window.moment = moment;
 //google geolocation api key
 const geokey = 'AIzaSyCaDosh7dDXsuXn1E_GXXTLP6cvytiH-HE';
-// nederlandse validatieberichten
+// configureren veevalidate component
 Vue.use(VeeValidate, {
   locale: 'nl',
   dictionary: {
@@ -335,9 +336,11 @@ export default {
     }
   },
   created () {
+    //login chieck
     if(!Vue.ls.get('id')){
        this.$router.push('/Account/login')
     }
+    //ophalen data
     this.selectdata();
     //verhuur pas mogelijk maken vanaf vandaag
     var vandaag = new Date();
@@ -474,7 +477,7 @@ export default {
           this.errorsoncreate.push(e.response.statusText)
       });
     },
-    //assign van foto input
+    //assign van foto input(werkt wel niet bij het wegschrijven)
     foto: function (event, nummer) {
       if(nummer == 1){
         event.target.files[0] ? this.auto.fotos.foto1 = event.target.files[0] : this.auto.fotos.foto1 = null
@@ -541,7 +544,7 @@ export default {
         this.errorsoncreate.push(e.message)
       })
     },
-    //specificaties en voorwaarden omvormen naar object voor weg te schrijven
+    //specificaties en voorwaarden omvormen naar object voor weg te schrijven aangezien deze variabel zijn
     specvoorw: function(param){
       if(param == "specs"){
         let specsarray = [];
@@ -569,7 +572,7 @@ export default {
         return voorwaardenarray
       }
     },
-    //filteren van specifieke datum uit beschikbaarheid van calender
+    //filter voor omvormen datum notatie
     filteryear: function(param) {
       let vandaag = param;
       let maand = param.getMonth() + 1;
@@ -612,7 +615,7 @@ export default {
         this.errorsoncreate.push(e.message)
       })
     },
-    //custom format calendar
+    //custom dateformat voor calendar
     datepickerformat: function(date) {
       return moment(date).format('D MMMM  YYYY');
     } 
@@ -621,7 +624,8 @@ export default {
     datumfilter: function(val){      
     if (!val) return ''
     return moment(String(val)).format('MM/DD/YYYY')
+    }
   }
-}
+
 }
 </script>

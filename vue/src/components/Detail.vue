@@ -105,7 +105,7 @@
                     </div>   
                     <div class="columns is-multiline is-mobile">
                       <div class=" column customcolumn">                     
-                        <button @click="huren" class="buttonhuur fullwidth">Huur mij nu!</button>
+                        <button @click="hurenvalidatie" class="buttonhuur fullwidth">Huur mij nu!</button>
                       </div>
                     </div>
               <div class="reviews">
@@ -134,17 +134,34 @@
             </div>
           </div>
         </div>
-    </div>    
+    </div> 
+    <div  class="modal" v-bind:class="{ 'is-active': modal }">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head fullwidth">
+          <p class="modal-card-title lemonmilk">Reserveren</p>
+          <button  @click="modaltoggle()" class="delete" aria-label="close"></button>
+        </header>
+        <section class="modal-card-body">
+          <p class="label">Weet je zeker dat je deze {{ title }} wilt reserveren van {{ hurenvan|datumfilter }} tot {{ hurentot|datumfilter }}?</p>
+        </section>
+        <footer class="modal-card-foot">
+          <a class="button is-success" @click="modaltoggle(true)">Reserveren</a>
+          <a class="button" @click="modaltoggle()" >Annuleren</a>
+        </footer>
+      </div>
+    </div>   
   </div>
 </template>
 <script>
 /* eslint-disable */
 import axios from 'axios'
-import Vue from 'vue'        
+import Vue from 'vue'      
 export default {
   name: 'detail',
   data () {
     return {
+      modal: false,
       title: 'detail',
       id: this.$route.params.id,
       prijs: null,
@@ -397,21 +414,44 @@ export default {
           this.errors.push(e.response.statusText)
       });
     },
-    huren: function() {
-      if(this.hurenvan && this.hurentot){
-        this.errors = [];
-              console.log('verhuurd');
-      }else {
-        this.errors = [];
-        this.errors.push("je moet de begin en einddatum ingeven wanneer je de auto wilt huren")
+    modaltoggle: function(accept){
+      if(accept == true){
+        this.huren()
       }
+      this.modal = ! this.modal;
+    },
+    hurenvalidatie: function() {
+      if(Vue.ls.get('id')){ 
+        if(this.hurenvan && this.hurentot){
+          if(this.hurentot < this.hurenvan){
+            this.errors = [];
+            this.errors.push("De aanvang datum kan niet vroeger zijn dan de einddatum");
+            document.body.scrollTop = document.documentElement.scrollTop = 0; 
+          }else{
+            this.errors = [];
+            this.modal = true;
+          }
+        }else {
+            this.errors = [];
+            this.errors.push("je moet de begin en einddatum ingeven wanneer je de auto wilt huren");
+            document.body.scrollTop = document.documentElement.scrollTop = 0;       
+        }
+      }else{
+        this.errors = [];
+        this.errors.push("je moet ingelogd zijn om een auto te kunnen huren");
+        document.body.scrollTop = document.documentElement.scrollTop = 0;     
+      }
+    },
+    huren: function(){
+      console.log('verhuurd')
+      this.$router.push('/Account/Gehuurdeautos')
     }
   },
   filters: {
     datumfilter: function(val){      
-    if (!val) return ''
-    return moment(String(val)).format('MM/DD/YYYY')
-  }
+      if (!val) return ''
+      return moment(String(val)).format('MM/DD/YYYY')
+    }
 }
 }
 </script>
