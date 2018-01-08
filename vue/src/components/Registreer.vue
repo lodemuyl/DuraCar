@@ -124,17 +124,20 @@ export default {
     }
   },
   created () {
+    //login check
     if(Vue.ls.get('id')){
        this.$router.push('/Account')
     }
   },
   methods: {
+    //validatie van alle velden en dan pas doorgaan naar post
     validateBeforeSubmit (e) {
-        this.$validator.validateAll()
-        if (!this.errors.any()) {
-         this.registreer()
-        }
-      },
+      this.$validator.validateAll()
+      if (!this.errors.any()) {
+        this.registreer()
+      }
+    },
+    //post 
     registreer () {
       axios.post('http://localhost/duracar/user/register?_format=hal_json',
       {
@@ -158,6 +161,8 @@ export default {
               this.errorregister.push(e.response.statusText)
           });
     },
+    //2e login voor het ophalen van de current user en als dubbel check of je wel degelijk bent ingelogd
+    //dit zijn velden zoals gsmnummer en naam , deze velden kan je niet veranderen en staan vast per user.
     login () {  
       this.errors = [] 
       axios.post('http://localhost/duracar/user/login?_format=hal_json',

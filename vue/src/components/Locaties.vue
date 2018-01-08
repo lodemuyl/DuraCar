@@ -28,7 +28,6 @@
 
     </div>
 </template>
-
 <script>
 /* eslint-disable */
 import axios from 'axios'
@@ -53,11 +52,13 @@ export default {
     this.autos();
   },
   mounted () {
+    //mijnlocatie
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition) 
       }
-  },
+  },  
   methods: {
+    //ophalen van alle locaties van auto inc de naam en het merk
     autos: function () {
       axios.all([
         axios.get(`http://localhost/duracar/merkenlijst`),
@@ -91,11 +92,12 @@ export default {
         this.errors.push(e.message)
       })
     },
+    //mijn positie
     showPosition : function(position){   
         this.mylat = position.coords.latitude
         this.mylon = position.coords.longitude      
     }
-    }
+  }
 }
 </script>
 

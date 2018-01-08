@@ -51,13 +51,12 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import axios from 'axios'
 import VueLocalStorage from 'vue-ls'
 import Vue from 'vue'
-import '@/assets/js/bulma.js'
+//encrypt en decrypt auth string
 let btoa = require('btoa');
 export default {
   name: 'login',
@@ -70,12 +69,14 @@ export default {
       formSubmitted: false
     } 
   },
-  created () {    
+  created () {
+    //als je reeds bent ingelogd moet je naar mijn account gaan
     if(Vue.ls.get('id')){
        this.$router.push('/Account')
     }
   },
   methods: {
+    //login via post
     login () {  
       this.errors = [] 
       axios.post('http://localhost/duracar/user/login?_format=hal_json',
@@ -107,8 +108,8 @@ export default {
             }
           });         
     },
-    getuser () {
-       //na inloggen op de server get doen naar de gegevens
+    //na inloggen op de server get doen naar de gegevens
+    getuser () {       
           let id = Vue.ls.get('id');
           var url = 'http://localhost/duracar/user/'+id+'?_format=hal_json'
           axios.get(url,{
@@ -117,7 +118,8 @@ export default {
               password: this.wachtwoord
             }
           })
-          .then((data) => {            
+          .then((data) => {      
+            console.log(data.data)      
             Vue.ls.set('uuid', data.data.uuid[0].value, 60 * 60 * 3000)
             Vue.ls.set('gsm', data.data.field_gsm_nummer[0].value, 60 * 60 * 3000)
             this.formSubmitted = true

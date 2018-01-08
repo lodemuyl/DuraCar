@@ -148,7 +148,7 @@ export default {
             }                   
           })
     },
-    //modaltoggle voor wijzigen van gegevens
+    //modaltoggle voor popup
     modaltoggle: function(param) {
       if(param){
         if(param === this.user.naam){

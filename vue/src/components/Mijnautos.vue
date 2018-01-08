@@ -51,13 +51,12 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import VueLocalStorage from 'vue-ls'
 import Vue from 'vue'
-Vue.use(VueLocalStorage); 
 import axios from 'axios'
+Vue.use(VueLocalStorage); 
 export default {
   name: 'mijnautos',
   data () {
@@ -77,6 +76,7 @@ export default {
     }
   },
   created () {
+    //logincheck
     if(!Vue.ls.get('id')){
        this.$router.push('/Account/login')
     }
@@ -87,6 +87,7 @@ export default {
     this.user = unhash.substring(0, unhash.indexOf(":"));
   },
   methods: {
+    //modaltoggle voor verwijderen
     modaltoggle: function(naam, id) {
       if(naam && id){
         this.click[0] = {
@@ -99,6 +100,7 @@ export default {
       }
       this.modal = ! this.modal;
     },
+    //verwijderen van mijn auto
     verwijderen: function(id){ 
       if (id) {      
         let hash = Vue.ls.get('auth');
@@ -122,6 +124,7 @@ export default {
         this.modaltoggle();
       }  
     },
+    //autos ophalen adhv userid in backend via contextuele filter
     autofilter: function() {
       axios.get(`http://localhost/duracar/autolijst/` + this.userid + `?format=hal_json`)
       .then((filterlijst) => {

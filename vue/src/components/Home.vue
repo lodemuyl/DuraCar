@@ -1,6 +1,5 @@
 <template>
-  <div class="home">
- 
+  <div class="home"> 
      <div class="logo">
       <img src="../assets/images/logo/logo2.png">
     </div>
@@ -45,7 +44,6 @@
     </div>
   </div>
 </template>
-
 <script>
 export default {
   name: 'home',

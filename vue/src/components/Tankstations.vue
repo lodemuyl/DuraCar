@@ -26,11 +26,12 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import axios from 'axios'
 import L from 'leaflet';
+//apikey google geolocation
+const apikey = 'AIzaSyCDj88Ju4Gl7i66LaJf7lYSOgjPRkKTjfo'
 //icon bugfix
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -61,6 +62,7 @@ export default {
     this.api(this.lat,this.lon,this.straal);
   },
   mounted () {
+    //eigen locatie
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(this.showPosition) 
       }
@@ -70,9 +72,11 @@ export default {
         this.mylat = position.coords.latitude
         this.mylon = position.coords.longitude      
     },
+    //google geolocation api
     api: function(lat,lon,straal) {
-      axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?&type=gas_station&key=AIzaSyCDj88Ju4Gl7i66LaJf7lYSOgjPRkKTjfo`, {
+      axios.get(`https://maps.googleapis.com/maps/api/place/nearbysearch/json?&type=gas_station`, {
           params: {
+            key: apikey,
             radius: straal * 1000,
             location: lat + ',' + lon
           }       

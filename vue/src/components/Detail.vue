@@ -211,7 +211,7 @@ export default {
     this.autosget();
   },
   methods: {
-    //ophalen alle api's voor detail kunnen weer te geven
+    //ophalen specifieke auto voor detail gegevens weer te geven
     autosget: function() {
       var url = 'http://localhost/duracar/autos/autos/' + this.id +'?_format=hal_json';
       var reviewsurl = 'http://localhost/duracar/reviews/' + this.id;
@@ -337,7 +337,7 @@ export default {
         
       })  
     },
-    //afbeeldingslider
+    //afbeeldingslider volgende afbeelding
     volgende: function() {
       if(this.afbeeldingnummer == Object.keys(this.afbeeldingen).length){
         this.afbeeldingnummer = 1
@@ -345,6 +345,7 @@ export default {
       this.afbeeldingnummer += 1
       }
     },
+    //afbeeldingslider vorige afbeelding
     vorige: function() {
       if(this.afbeeldingnummer == 1){
         this.afbeeldingnummer = Object.keys(this.afbeeldingen).length
@@ -356,6 +357,7 @@ export default {
     datepickerformat: function(date) {
       return moment(date).format('D MMMM  YYYY');
     },
+    //reviews van de auto
     reviewplaatsen: function(){
       let id = Vue.ls.get('id');
       let uuid = Vue.ls.get('uuid')
@@ -443,7 +445,7 @@ export default {
       }
     },
     huren: function(){
-      console.log('verhuurd')
+      console.log('verhuurd')      
       this.$router.push('/Account/Gehuurdeautos')
     }
   },

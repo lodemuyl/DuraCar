@@ -60,6 +60,7 @@ export default {
        this.$router.push('/Account/login')
     }
   },
+  //popup toggle
   methods: {
     modaltoggle: function(){
       this.modal = !this.modal
