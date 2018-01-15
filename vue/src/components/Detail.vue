@@ -5,6 +5,7 @@
       <div class="column is-10 is-offset-1">
         <div class="notification is-danger">
           <p v-for="errors in errors">{{ errors }}</p>
+          <router-link v-if="!loggedin" to="/Account/Login">Login</router-link>
         </div>
       </div>
     </div>
@@ -181,6 +182,8 @@ export default {
       beschikbaartot: null,
       hurenvan: null,
       hurentot: null,
+      huurders:[],
+      gehuurdeautos: [],
       voorwaarden: [],
       disabled: {
         to: null,
@@ -204,10 +207,13 @@ export default {
       },
       geschrevendoor: null,
       afbeeldingnummer: 1,
-
+      loggedin: false
     }
   },
   created () {
+    if(Vue.ls.get('id')){
+       this.loggedin = true
+    }
     this.autosget();
   },
   methods: {
@@ -228,6 +234,10 @@ export default {
         //indien men een review wilt schrijven bepalen van user
         if(Vue.ls.get('naam') && Vue.ls.get('id')){
         this.reviewauteur = Vue.ls.get('naam');
+        }
+        //ophalen van huurders voor deze auto
+        if(autos.data.field_hurenauto){
+          this.huurders = autos.data.field_hurenauto
         }
          //voorwaarden ophalen
         var voorwaardentemp = [];
@@ -306,6 +316,10 @@ export default {
           if(gebruikers.data[m].uid[0].value == id){
             this.eigenaar.naam = gebruikers.data[m].name[0].value;
             this.eigenaar.gsm =  String(gebruikers.data[m].field_gsm_nummer[0].value);
+            //data ophalen over gehuurde autos van ingelogde gebruiker
+            if(gebruikers.data[m].field_huren){
+              this.gehuurdeautos = gebruikers.data[m].field_huren
+            }
           }
         };
         //aandrijving
@@ -416,12 +430,14 @@ export default {
           this.errors.push(e.response.statusText)
       });
     },
+    //modaltoggle voor bevestiging van huren
     modaltoggle: function(accept){
       if(accept == true){
         this.huren()
       }
       this.modal = ! this.modal;
     },
+    //validatie voor het checken of de persoon is ingelogd voor hij kan huren
     hurenvalidatie: function() {
       if(Vue.ls.get('id')){ 
         if(this.hurenvan && this.hurentot){
@@ -444,11 +460,98 @@ export default {
         document.body.scrollTop = document.documentElement.scrollTop = 0;     
       }
     },
+    //huren post naar user en vervolgens naar user via hurenuser()
     huren: function(){
-      console.log('verhuurd')      
-      this.$router.push('/Account/Gehuurdeautos')
-    }
-  },
+      let exists = false;
+      for (let m = 0; m < this.huurders.length; m++) {
+        if(this.huurders[m].value == Vue.ls.get('id')){
+          exists = true
+        }
+      }
+      //check of de gebruiker de auto al heeft gehuurd
+      if(!exists){
+       var hash = Vue.ls.get('auth');       
+       var unhash = String(window.atob(hash));
+       var index = unhash.indexOf(":");
+       var user = unhash.substring(0, unhash.indexOf(":"));
+       var ww = unhash.substring(unhash.indexOf(":") + 1, unhash.lenght); 
+       let id = Vue.ls.get('id');
+       let url = 'http://localhost/duracar/autos/autos/'+ this.id +'?_format=hal_json'
+       let patchdatacar = {};
+       let patchdatauser = {};
+       let aantalhuurders = this.huurders.length
+       let aantalgehuurdeautos = this.gehuurdeautos.length
+      //patchdata voor car
+       if (aantalhuurders > 0){
+        patchdatacar['field_hurenauto'] = this.huurders
+        patchdatacar['field_hurenauto'][aantalhuurders] = {
+            "value": id
+          }
+        }else{
+           patchdatacar['field_hurenauto'] = {
+             "value": id
+           }
+        }
+        //patchdata voor user
+        if(aantalgehuurdeautos > 0){
+        patchdatauser['field_huren'] = this.gehuurdeautos
+        patchdatauser['field_huren'][aantalgehuurdeautos] ={
+            "value": this.id + '*' + moment(this.beschikbaarvan).format('MM/DD/YY')  + '*' + moment(this.beschikbaartot).format('MM/DD/YY')
+          }
+        }else{
+           patchdatauser['field_huren'] = {
+             "value": this.id + '*' + moment(this.beschikbaarvan).format('MM/DD/YY') + '*' + moment(this.beschikbaartot).format('MM/DD/YY')
+           }
+        }
+        axios.patch(url, patchdatacar,
+        {
+            auth: {
+                username: user,
+                password: ww
+            },
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            }
+        }
+        )
+        .then((data) => {   
+          this.hurenuser(user, ww, patchdatauser)     
+          this.errors = []   
+          this.$router.push('/Account/Gehuurdeautos')          
+        })
+        .catch( e => {
+            this.errors.push(e.response.statusText)
+            console.log(e.response)
+        });
+      }else{
+        this.errors.push("Je hebt de auto reeds gehuurd, ga naar gehuurde autos om deze te verwijderen")
+        document.body.scrollTop = document.documentElement.scrollTop = 0; 
+      }
+    },
+    hurenuser: function(user, ww, data ){
+      let url =  'http://localhost/duracar/user/'+ Vue.ls.get('id') +'?_format=hal_json'
+      axios.patch(url, data,
+            {
+                auth: {
+                    username: user,
+                    password: ww
+                },
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                }
+            }
+            )
+            .then((data) => {        
+              console.log('verhuurd')              
+            })
+            .catch( e => {
+                this.errors.push(e.response.statusText)
+                console.log(e.response)
+            });
+        }
+      },
   filters: {
     datumfilter: function(val){      
       if (!val) return ''

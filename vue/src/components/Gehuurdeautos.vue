@@ -41,7 +41,6 @@
     </div>
   </div>
 </template>
-
 <script>
 /* eslint-disable */
 import axios from 'axios'
@@ -51,19 +50,43 @@ export default {
   data () {
     return {
       title: 'gehuurdeautos',
-      modal: false
+      modal: false,
+      gehuurdeautos: []
     }
   },
   created (){
     //loginvalidatie
     if(!Vue.ls.get('id')){
        this.$router.push('/Account/login')
+    }else{
+      this.getdata()
     }
   },
   //popup toggle
   methods: {
     modaltoggle: function(){
       this.modal = !this.modal
+    },
+    getdata: function(){
+      if(Vue.ls.get('id')){
+          let id = Vue.ls.get('id');
+          let url = 'http://localhost/duracar/user/'+id+'?_format=hal_json';
+          let hash = Vue.ls.get('auth');
+          let unhash = String(window.atob(hash));
+          let index = unhash.indexOf(":");
+          let naam = unhash.substring(0, unhash.indexOf(":"));
+          let ww = unhash.substring(unhash.indexOf(':') + 1, unhash.length)
+          axios.get(url,{
+            auth: {
+              username: naam,
+              password: ww
+            }
+          })
+          .then((data) => {  
+            console.log(data.data)
+            this.gehuurdeautos = data.data.field_huren
+          })
+      }
     }
   }
 }

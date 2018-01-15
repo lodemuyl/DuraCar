@@ -137,11 +137,11 @@ export default {
             }
           })
           .then((data) => {  
-            let thumb = data.data._links["http://localhost/duracar/rest/relation/user/user/user_picture"];
+            let userpicture = data.data._links["http://localhost/duracar/rest/relation/user/user/user_picture"];
             this.user.naam = data.data.name[0].value;
             this.user.email = data.data.mail[0].value;
-            if(thumb){
-              this.thumbnail = thumb[0].href;
+            if(userpicture){
+              this.thumbnail = userpicture[0].href;
             }
             if(data.data.field_gsm_nummer){
               this.user.gsm = data.data.field_gsm_nummer[0].value 
