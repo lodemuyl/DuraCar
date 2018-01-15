@@ -10,10 +10,17 @@
 }
 .logo{
     margin: 2rem 0px;
+    height: auto;
+    text-align: center;
     img{
-
+        width: 80vw;
     }
 }
+.home{
+    .columns {
+        margin-right: 0px!important;
+    }
+} 
 .werking{
     padding-top: 35px;
     padding-bottom: 25px;
