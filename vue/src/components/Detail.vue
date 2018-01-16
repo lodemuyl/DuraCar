@@ -463,6 +463,10 @@ export default {
     //huren post naar user en vervolgens naar user via hurenuser()
     huren: function(){
       let exists = false;
+      let max3 = false
+      if (this.gehuurdeautos.length  == 3){
+        max3 = true
+      }
       for (let m = 0; m < this.huurders.length; m++) {
         if(this.huurders[m].value == Vue.ls.get('id')){
           exists = true
@@ -482,48 +486,53 @@ export default {
        let aantalhuurders = this.huurders.length
        let aantalgehuurdeautos = this.gehuurdeautos.length
       //patchdata voor car
-       if (aantalhuurders > 0){
-        patchdatacar['field_hurenauto'] = this.huurders
-        patchdatacar['field_hurenauto'][aantalhuurders] = {
-            "value": id
-          }
-        }else{
-           patchdatacar['field_hurenauto'] = {
-             "value": id
-           }
-        }
-        //patchdata voor user
-        if(aantalgehuurdeautos > 0){
-        patchdatauser['field_huren'] = this.gehuurdeautos
-        patchdatauser['field_huren'][aantalgehuurdeautos] ={
-            "value": this.id + '*' + moment(this.beschikbaarvan).format('MM/DD/YY')  + '*' + moment(this.beschikbaartot).format('MM/DD/YY')
-          }
-        }else{
-           patchdatauser['field_huren'] = {
-             "value": this.id + '*' + moment(this.beschikbaarvan).format('MM/DD/YY') + '*' + moment(this.beschikbaartot).format('MM/DD/YY')
-           }
-        }
-        axios.patch(url, patchdatacar,
-        {
-            auth: {
-                username: user,
-                password: ww
-            },
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json'
+        if(!max3){ 
+          if (aantalhuurders > 0){
+            patchdatacar['field_hurenauto'] = this.huurders
+            patchdatacar['field_hurenauto'][aantalhuurders] = {
+                "value": id
+              }
+          }else{
+            patchdatacar['field_hurenauto'] = {
+              "value": id
             }
+          }
+          //patchdata voor user
+          if(aantalgehuurdeautos > 0){
+            patchdatauser['field_huren'] = this.gehuurdeautos
+            patchdatauser['field_huren'][aantalgehuurdeautos] ={
+                "value": this.id + '*' + moment(this.hurenvan).format('MM/DD/YY')  + '*' + moment(this.hurentot).format('MM/DD/YY')
+              }
+          }else{
+            patchdatauser['field_huren'] = {
+              "value": this.id + '*' + moment(this.hurenvan).format('MM/DD/YY') + '*' + moment(this.hurentot).format('MM/DD/YY')
+            }
+          }
+          axios.patch(url, patchdatacar,
+          {
+              auth: {
+                  username: user,
+                  password: ww
+              },
+              headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+              }
+          }
+          )
+          .then((data) => {   
+            this.hurenuser(user, ww, patchdatauser)     
+            this.errors = []   
+            this.$router.push('/Account/Gehuurdeautos')     
+          })
+          .catch( e => {
+              this.errors.push(e.response.statusText)
+              console.log(e.response)
+          });
+        }else{
+          this.errors.push("Je mag maar maximum 3 auto's per account huren")
+          document.body.scrollTop = document.documentElement.scrollTop = 0; 
         }
-        )
-        .then((data) => {   
-          this.hurenuser(user, ww, patchdatauser)     
-          this.errors = []   
-          this.$router.push('/Account/Gehuurdeautos')          
-        })
-        .catch( e => {
-            this.errors.push(e.response.statusText)
-            console.log(e.response)
-        });
       }else{
         this.errors.push("Je hebt de auto reeds gehuurd, ga naar gehuurde autos om deze te verwijderen")
         document.body.scrollTop = document.documentElement.scrollTop = 0; 

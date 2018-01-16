@@ -118,8 +118,7 @@ export default {
               password: this.wachtwoord
             }
           })
-          .then((data) => {      
-            console.log(data.data)      
+          .then((data) => {        
             Vue.ls.set('uuid', data.data.uuid[0].value, 60 * 60 * 3000)
             Vue.ls.set('gsm', data.data.field_gsm_nummer[0].value, 60 * 60 * 3000)
             this.formSubmitted = true
